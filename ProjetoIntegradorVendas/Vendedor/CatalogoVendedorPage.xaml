@@ -1,0 +1,117 @@
+﻿<Page x:Class="ProjetoIntegradorVendas.Vendedor.CatalogoVendedorPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ProjetoIntegradorVendas.Vendedor"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="CatalogoVendedorPage">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="83" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <ui:Card Grid.Row="0" Margin="0,1,0,0" Background="{DynamicResource SystemAccentColorBrush}" Height="66">
+                <Grid>
+                    <TextBlock Text="Catálogo de Produtos"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center" />
+                </Grid>
+            </ui:Card>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
+                <ItemsControl ItemsSource="{Binding Produtos}" Background="#FF252525" >
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="250" Height="325" Margin="10"
+                                    CornerRadius="10" 
+                                    Padding="10" 
+                                    Tag="{Binding}">
+                                <StackPanel>
+                                    <Image Source="{Binding ImagemPath}" 
+                                           Height="175" Width="175" 
+                                           Stretch="UniformToFill"
+                                           Margin="0,0,0,10"/>
+                                    <StackPanel Margin="10" Orientation="Vertical">
+                                        <!-- Nome do Produto -->
+                                        <TextBlock Text="{Binding Nome}"
+                                                   FontWeight="Bold"
+                                                   FontSize="25"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   TextWrapping="Wrap" />
+
+                                        <!-- Preço formatado -->
+                                        <TextBlock Text="{Binding Preco, StringFormat=R$ {0:F2}}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="LightGreen"
+                                                   HorizontalAlignment="Center"
+                                                   FontSize="20"
+                                                   Margin="0,6,0,0" />
+
+                                        <!-- Vendido por -->
+                                        <TextBlock Foreground="LightGray"
+                                                   FontSize="14"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,4,0,0">
+                                            <Run Text="Vendido por: " />
+                                            <Run Text="{Binding IdFornecedor.FornecedorNome}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <ui:NavigationView x:Name="NavigationViewControl"
+                           UseLayoutRounding="False"
+                           PaneDisplayMode="LeftFluent"
+                           RenderTransformOrigin="0.5,0.5" Margin="0,-4,1,4">
+            <ui:NavigationView.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="0.614"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="0.535"/>
+                </TransformGroup>
+            </ui:NavigationView.RenderTransform>
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Home" Margin="0,10,0,0" Click="NavigationView_OnItemInvoked">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.Home24}" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.MenuItems>
+
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem x:Name="Logout" Content="Logout" Click="NavigationView_OnItemInvoked">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.SignOut20}" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.FooterMenuItems>
+        </ui:NavigationView>
+    </Grid>
+</Page>
