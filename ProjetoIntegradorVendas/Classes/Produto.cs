@@ -11,4 +11,5 @@ public class Produto
     public string Descricao { get; set; }
     public string Imagem { get; set; }
     public BitmapImage ImagemPath { get; set; }
+    public int Estoque { get; set; }
 }

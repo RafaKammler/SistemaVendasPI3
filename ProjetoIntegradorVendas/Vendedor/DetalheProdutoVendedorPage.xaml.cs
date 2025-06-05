@@ -18,15 +18,18 @@ using Wpf.Ui.Controls;
 namespace ProjetoIntegradorVendas
 {
     /// <summary>
-    /// Interaction logic for CadastroProdutosPage.xaml
+    /// Interaction logic for DetalheProdutoVendedorPage.xaml
     /// </summary>
-    public partial class CadastroProdutosPage : Page
+    public partial class DetalheProdutoVendedorPage : Page
     {
-        private int vendedorId;
-        public CadastroProdutosPage(int vendedorId)
+        public Produto Produto { get; set; }
+        private int VendedorID {get; set; }
+        public DetalheProdutoVendedorPage(Produto produto, int vendedorID)
         {
             InitializeComponent();
-            this.vendedorId = vendedorId;
+            this.Produto = produto;
+            this.DataContext = this;
+            this.VendedorID = vendedorID;
         }
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
@@ -39,7 +42,7 @@ namespace ProjetoIntegradorVendas
                 switch (content)
                 {
                     case "Home":
-                        mainWindow.MainFrame.Navigate(new CatalogoVendedorPage(vendedorId));
+                        mainWindow.MainFrame.Navigate(new CatalogoVendedorPage(VendedorID));
                         break;
                     case "Logout":
                         mainWindow.MainFrame.Navigate(new LoginPage());

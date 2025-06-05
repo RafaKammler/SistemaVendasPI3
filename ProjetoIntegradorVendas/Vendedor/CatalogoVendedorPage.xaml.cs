@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
+using Button = System.Windows.Controls.Button;
 
 namespace ProjetoIntegradorVendas.Vendedor
 {
@@ -21,9 +24,17 @@ namespace ProjetoIntegradorVendas.Vendedor
     /// </summary>
     public partial class CatalogoVendedorPage : Page
     {
-        public CatalogoVendedorPage()
+        public ObservableCollection<Produto> Produtos { get; set; }
+        private int vendedorId { get; set; }
+
+        public CatalogoVendedorPage(int idVendedor)
         {
             InitializeComponent();
+
+            var service = new ProdutoService();
+            Produtos = service.BuscarProdutosVendedor(idVendedor);
+            this.DataContext = this;
+            this.vendedorId = idVendedor;
         }
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
@@ -36,12 +47,33 @@ namespace ProjetoIntegradorVendas.Vendedor
                 switch (content)
                 {
                     case "Home":
-                        mainWindow.MainFrame.Navigate(new CatalogoVendedorPage());
+                        mainWindow.MainFrame.Navigate(new CatalogoVendedorPage(vendedorId));
                         break;
                     case "Logout":
                         mainWindow.MainFrame.Navigate(new LoginPage());
                         break;
                 }
+            }
+        }
+
+        public void AbrirDetalhes_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Button selectedItem)
+            {
+                string content = selectedItem.Content.ToString();
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+
+                mainWindow.MainFrame.Navigate(new CadastroProdutosPage(vendedorId));
+
+
+            }
+        }
+        private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            if (sender is Border border && border.Tag is Produto produto)
+            {
+                mainWindow.MainFrame.Navigate(new DetalheProdutoVendedorPage(produto, vendedorId));
             }
         }
     }

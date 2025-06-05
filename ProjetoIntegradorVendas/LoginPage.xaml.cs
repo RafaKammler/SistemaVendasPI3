@@ -12,8 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ProjetoIntegradorVendas.Vendedor;
 using Wpf.Ui.Controls;
 using Wpf.Ui;
+using MySqlX.XDevAPI.Common;
 
 namespace ProjetoIntegradorVendas
 {
@@ -37,25 +39,36 @@ namespace ProjetoIntegradorVendas
 
             string tabela = tipoLogin == "Vendedor" ? "fornecedor" : "cliente";
 
+            string col = tipoLogin == "Vendedor" ? "Fornecedor" : "Cliente";
+
             using (var conn = Database.GetConnection())
             {
                 try
                 {
                     conn.Open();
 
-                    string query = $"SELECT COUNT(*) FROM {tabela} WHERE ClienteNome = @nome AND Senha = @senha";
+                    string query = $"SELECT {col}Id FROM {tabela} WHERE {col}Nome = @nome AND Senha = @senha";
 
                     using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@nome", sUsername);
                         cmd.Parameters.AddWithValue("@senha", sPassword);
 
-                        var count = Convert.ToInt32(cmd.ExecuteScalar());
+                        object result = cmd.ExecuteScalar();
 
-                        if (count > 0)
+                        if (result != null)
                         {
+                            int userId = Convert.ToInt32(result);
                             var mainWindow = (MainWindow)Application.Current.MainWindow;
-                            mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+
+                            if (tipoLogin == "Cliente")
+                            {
+                                mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+                            }
+                            else if (tipoLogin == "Vendedor")
+                            {
+                                mainWindow.MainFrame.Navigate(new CatalogoVendedorPage(userId));
+                            }
                         }
                         else
                         {
