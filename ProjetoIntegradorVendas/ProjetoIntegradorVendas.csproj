@@ -22,6 +22,9 @@
     <Compile Update="Cliente\DetalheProdutoPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Vendedor\EditarProdutoPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Vendedor\CadastroProdutosPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

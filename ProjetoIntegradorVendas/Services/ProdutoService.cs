@@ -34,10 +34,10 @@ namespace ProjetoIntegradorVendas.Services
             return ExecutarConsultaProdutos(sqlProdutosBase);
         }
 
-        public ObservableCollection<Produto> BuscarProdutosVendedor(int codigoVendedor)
+        public ObservableCollection<Produto> BuscarProdutosVendedor(Fornecedor codigoVendedor)
         {
             string query = sqlProdutosBase + " WHERE f.FornecedorID = @codigoVendedor";
-            var parametros = new Dictionary<string, object> { { "@codigoVendedor", codigoVendedor } };
+            var parametros = new Dictionary<string, object> { { "@codigoVendedor", codigoVendedor.FornecedorID } };
             return ExecutarConsultaProdutos(query, parametros);
         }
 
@@ -117,6 +117,33 @@ namespace ProjetoIntegradorVendas.Services
                 Estoque = estoque,
                 ImagemPath = imagemPath
             };
+        }
+        public void CadastrarProduto(Produto produto)
+        {
+            const string query = @"
+        INSERT INTO produto (FornecedorID, Nome, Descricao, Preco, Imagem, Estoque)
+        VALUES (@FornecedorID, @Nome, @Descricao, @Preco, @Imagem, @Estoque);";
+
+            using var conn = Database.GetConnection();
+            try
+            {
+                conn.Open();
+                using var cmd = new MySqlCommand(query, conn);
+
+                cmd.Parameters.AddWithValue("@FornecedorID", produto.IdFornecedor?.FornecedorID ?? 0);
+                cmd.Parameters.AddWithValue("@Nome", produto.Nome ?? string.Empty);
+                cmd.Parameters.AddWithValue("@Descricao", produto.Descricao ?? string.Empty);
+                cmd.Parameters.AddWithValue("@Preco", produto.Preco);
+                cmd.Parameters.AddWithValue("@Imagem", produto.Imagem ?? string.Empty);
+                cmd.Parameters.AddWithValue("@Estoque", produto.Estoque);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao cadastrar produto: {ex.Message}");
+                throw;
+            }
         }
     }
 }

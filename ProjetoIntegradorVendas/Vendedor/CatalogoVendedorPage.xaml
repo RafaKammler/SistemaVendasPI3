@@ -9,9 +9,9 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CatalogoVendedorPage">
 
-
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -21,7 +21,7 @@
                            PaneDisplayMode="Top"
                            Grid.Row="0">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked" >
+                <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.Home24}" />
                     </ui:NavigationViewItem.Icon>
@@ -37,9 +37,16 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
+        <!-- Botão Cadastrar Único -->
+        <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Right" Grid.Row="1">
+            <Button Content="Cadastrar"
+                    Width="100"
+                    Height="30"
+                    Click="Cadastrar_Click"/>
+        </StackPanel>
 
-
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
+        <!-- Lista de Produtos -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Produtos}"
                           Background="#FF252525"
                           HorizontalContentAlignment="Center">
@@ -51,48 +58,45 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
-
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Width="250" Height="325" Margin="10"
-                                    CornerRadius="10" 
-                                    Padding="10" 
-                                    MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp" Tag="{Binding}">
+                                CornerRadius="10" 
+                                Padding="10" 
+                                MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp" Tag="{Binding}">
                             <StackPanel>
                                 <Image Source="{Binding ImagemPath}" 
-                                           Height="175" Width="175" 
-                                           Stretch="UniformToFill"
-                                           Margin="0,0,0,0"/>
+                                       Height="175" Width="175" 
+                                       Stretch="UniformToFill"
+                                       Margin="0,0,0,0"/>
                                 <StackPanel Margin="10" Orientation="Vertical">
-                                    <!-- Nome do Produto -->
                                     <TextBlock Text="{Binding Nome}"
-                                                   FontWeight="Bold"
-                                                   FontSize="20"
-                                                   Foreground="White"
-                                                   HorizontalAlignment="Left"
-                                                   TextWrapping="Wrap" />
+                                               FontWeight="Bold"
+                                               FontSize="20"
+                                               Foreground="White"
+                                               HorizontalAlignment="Left"
+                                               TextWrapping="Wrap" />
 
-                                    <!-- Preço formatado -->
                                     <TextBlock Text="{Binding Preco, StringFormat=R$ {0:F2}}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="LightGreen"
-                                                   HorizontalAlignment="Left"
-                                                   FontSize="15"
-                                                   Margin="0,6,0,0" />
-
+                                               FontWeight="SemiBold"
+                                               Foreground="LightGreen"
+                                               HorizontalAlignment="Left"
+                                               FontSize="15"
+                                               Margin="0,6,0,0" />
 
                                     <TextBlock Foreground="LightGray"
-                                                   FontSize="10"
-                                                   HorizontalAlignment="Left"
-                                                   Margin="0,4,0,10">
-                                            <Run Text="Quantidade em Estoque: " />
-                                            <Run Text="{Binding Estoque}" />
+                                               FontSize="10"
+                                               HorizontalAlignment="Left"
+                                               Margin="0,4,0,10">
+                                        <Run Text="Quantidade em Estoque: " />
+                                        <Run Text="{Binding Estoque}" />
                                     </TextBlock>
+
                                     <Button Content="Editar"
-                                                Width="100"
-                                                Height="30"
-                                                HorizontalAlignment="Center"
-                                                Click="AbrirDetalhes_Click"/>
+                                            Width="100"
+                                            Height="30"
+                                            HorizontalAlignment="Center"
+                                            Click="Editar_Click"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>

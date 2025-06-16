@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ProjetoIntegradorVendas.Classes;
 using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
 
@@ -26,14 +27,16 @@ namespace ProjetoIntegradorVendas
     public partial class CatalogoProdutosPage : Page
     {
 
+        private Cliente usuario;
         public ObservableCollection<Produto> Produtos { get; set; }
-        public CatalogoProdutosPage()
+        public CatalogoProdutosPage(Cliente usuario)
         {
             InitializeComponent();
 
             var service = new ProdutoService();
             Produtos = service.BuscarProdutos();
-            this.DataContext = this; 
+            this.DataContext = this;
+            this.usuario = usuario;
 
         }
 
@@ -48,13 +51,13 @@ namespace ProjetoIntegradorVendas
                 switch (content)
                 {
                     case "Home":
-                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(usuario));
                         break;
                     case "Carrinho":
-                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(usuario));
                         break;
                     case "Configurações":
-                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(usuario));
                         break;
                     case "Logout":
                         mainWindow.MainFrame.Navigate(new LoginPage());
@@ -78,7 +81,7 @@ namespace ProjetoIntegradorVendas
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             if (sender is Border border && border.Tag is Produto produto)
             {
-                mainWindow.MainFrame.Navigate(new DetalheProdutoPage(produto));
+                mainWindow.MainFrame.Navigate(new DetalheProdutoPage(produto, usuario));
             }
         }
     }

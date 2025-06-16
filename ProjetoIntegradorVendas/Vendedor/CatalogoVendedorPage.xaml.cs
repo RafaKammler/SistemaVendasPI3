@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,9 +26,9 @@ namespace ProjetoIntegradorVendas.Vendedor
     public partial class CatalogoVendedorPage : Page
     {
         public ObservableCollection<Produto> Produtos { get; set; }
-        private int vendedorId { get; set; }
+        private Fornecedor vendedorId { get; set; }
 
-        public CatalogoVendedorPage(int idVendedor)
+        public CatalogoVendedorPage(Fornecedor idVendedor)
         {
             InitializeComponent();
 
@@ -74,6 +75,28 @@ namespace ProjetoIntegradorVendas.Vendedor
             if (sender is Border border && border.Tag is Produto produto)
             {
                 mainWindow.MainFrame.Navigate(new DetalheProdutoVendedorPage(produto, vendedorId));
+            }
+        }
+
+        public void Cadastrar_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Button selectedItem)
+            {
+                string content = selectedItem.Content.ToString();
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+
+                mainWindow.MainFrame.Navigate(new CadastroProdutosPage(vendedorId));
+
+
+            }
+        }
+
+        public void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is Produto produtoSelecionado)
+            {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.MainFrame.Navigate(new EditarProduoPage(vendedorId, produtoSelecionado));
             }
         }
     }

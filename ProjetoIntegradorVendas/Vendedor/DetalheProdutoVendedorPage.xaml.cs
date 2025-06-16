@@ -23,8 +23,8 @@ namespace ProjetoIntegradorVendas
     public partial class DetalheProdutoVendedorPage : Page
     {
         public Produto Produto { get; set; }
-        private int VendedorID {get; set; }
-        public DetalheProdutoVendedorPage(Produto produto, int vendedorID)
+        private Fornecedor VendedorID {get; set; }
+        public DetalheProdutoVendedorPage(Produto produto, Fornecedor vendedorID)
         {
             InitializeComponent();
             this.Produto = produto;

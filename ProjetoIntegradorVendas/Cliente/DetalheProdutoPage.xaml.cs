@@ -1,33 +1,95 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MySqlX.XDevAPI;
+using ProjetoIntegradorVendas.Classes;
+using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Input;
 
 namespace ProjetoIntegradorVendas
 {
-    /// <summary>
-    /// Interaction logic for DetalheProdutoPage.xaml
-    /// </summary>
-    public partial class DetalheProdutoPage : Page
+    public partial class DetalheProdutoPage : Page, INotifyPropertyChanged
     {
+        private readonly Cliente _clienteLogado;
+        private readonly ComentarioService _comentarioService = new ComentarioService();
+
         public Produto Produto { get; set; }
-        public DetalheProdutoPage(Produto produto)
+
+        public ObservableCollection<Comentario> Comentarios { get; set; }
+
+        private string _novoComentarioTexto;
+        public string NovoComentarioTexto
+        {
+            get => _novoComentarioTexto;
+            set
+            {
+                _novoComentarioTexto = value;
+                OnPropertyChanged(nameof(NovoComentarioTexto));
+            }
+        }
+
+        public ICommand SalvarComentarioCommand { get; }
+
+        public DetalheProdutoPage(Produto produto, Cliente cliente)
         {
             InitializeComponent();
+
             this.Produto = produto;
+            this._clienteLogado = cliente;
+            SalvarComentarioCommand = new RelayCommand<object>(ExecutarSalvarComentario);
+
             this.DataContext = this;
+            CarregarComentarios();
         }
+
+        private void CarregarComentarios()
+        {
+            try
+            {
+                var comentariosDoBanco = _comentarioService.BuscarComentariosPorProduto(this.Produto.Id);
+                Comentarios = new ObservableCollection<Comentario>(comentariosDoBanco);
+                OnPropertyChanged(nameof(Comentarios)); // Notifica a UI que a coleção foi carregada
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Falha ao carregar comentários: {ex.Message}");
+                Comentarios = new ObservableCollection<Comentario>();
+            }
+        }
+
+        private void ExecutarSalvarComentario(object parameter)
+        {
+            if (string.IsNullOrWhiteSpace(NovoComentarioTexto)) return;
+
+            var novoComentario = new Comentario
+            {
+                ProdutoID = this.Produto.Id,
+                ClienteID = this._clienteLogado.ClienteID,
+                ComentarioTexto = this.NovoComentarioTexto,
+                DataComentario = DateTime.Now,
+
+                Cliente = this._clienteLogado
+            };
+
+            try
+            {
+                _comentarioService.SalvarComentario(novoComentario);
+
+                // Agora o objeto está completo e a UI será atualizada corretamente.
+                Comentarios.Insert(0, novoComentario);
+                NovoComentarioTexto = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Falha ao salvar comentário: {ex.Message}");
+            }
+        }
+
+        // --- Navegação e Notificação de Propriedades ---
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
         {
@@ -39,19 +101,26 @@ namespace ProjetoIntegradorVendas
                 switch (content)
                 {
                     case "Home":
-                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(_clienteLogado));
                         break;
                     case "Carrinho":
-                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+                        // Implementar navegação para o carrinho
                         break;
                     case "Configurações":
-                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
+                        // Implementar navegação para configurações
                         break;
                     case "Logout":
                         mainWindow.MainFrame.Navigate(new LoginPage());
                         break;
                 }
             }
+        }
+
+        // 6. Implementação necessária para o INotifyPropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

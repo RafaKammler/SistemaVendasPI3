@@ -1,4 +1,4 @@
-﻿<Page x:Class="ProjetoIntegradorVendas.CadastroProdutosPage"
+﻿<Page x:Class="ProjetoIntegradorVendas.EditarProduoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -42,7 +42,7 @@
 
             <StackPanel Margin="30" Width="400" HorizontalAlignment="Center">
                
-                <TextBlock Text="Cadastro de Produto" FontSize="28" FontWeight="Bold" Foreground="White" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+                <TextBlock Text="Edição do produto" FontSize="28" FontWeight="Bold" Foreground="White" Margin="0,0,0,20" HorizontalAlignment="Center"/>
 
                 <TextBlock Text="Nome" Foreground="White" Margin="0,10,0,5"/>
                 <TextBox x:Name="txNomeProduto" Text="{Binding Produto.Nome}" Height="40" />

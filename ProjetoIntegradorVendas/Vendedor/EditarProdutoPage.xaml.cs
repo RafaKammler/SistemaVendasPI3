@@ -26,15 +26,19 @@ namespace ProjetoIntegradorVendas
     /// Interaction logic for CadastroProdutosPage.xaml
     /// </summary>
    
-    public partial class CadastroProdutosPage : Page
+    public partial class EditarProduoPage : Page
     {
+        public Produto Produto { get; set; }
+
         private Fornecedor vendedorId;
 
-        public CadastroProdutosPage(Fornecedor vendedorId)
+        public EditarProduoPage(Fornecedor vendedorId, Produto produto)
         {
             InitializeComponent();
 
             this.vendedorId = vendedorId;
+            this.Produto = produto;
+            this.DataContext = this;
         }
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
@@ -100,9 +104,9 @@ namespace ProjetoIntegradorVendas
                 Nome = nomeProduto,
                 Descricao = descricaoProduto,
                 Preco = preco,
-                Imagem = "", // ou coloque aqui o caminho da imagem se for necessário
+                Imagem = "",
                 Estoque = estoque,
-                ImagemPath = null // ou coloque a imagem convertida se necessário
+                ImagemPath = null 
             };
 
             var service = new ProdutoService();
@@ -137,10 +141,10 @@ namespace ProjetoIntegradorVendas
 
             dlgMsg.Show();
         }
-
         private void NumberBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
+
     }
 }

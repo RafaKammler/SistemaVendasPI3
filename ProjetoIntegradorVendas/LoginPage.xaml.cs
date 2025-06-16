@@ -1,30 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ProjetoIntegradorVendas.Vendedor;
+using ProjetoIntegradorVendas.Classes;
+using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
-using Wpf.Ui;
-using MySqlX.XDevAPI.Common;
+using TextBlock = System.Windows.Controls.TextBlock;
 
 namespace ProjetoIntegradorVendas
 {
-    /// <summary>  
-    /// Interaction logic for LoginPage.xaml  
-    /// </summary>  
     public partial class LoginPage : Page
     {
-
         public LoginPage()
         {
             InitializeComponent();
@@ -32,54 +17,62 @@ namespace ProjetoIntegradorVendas
 
         private void irParaCatalogo_Click(object sender, RoutedEventArgs e)
         {
-            string sUsername = txUsuario.Text;
-            string sPassword = txSenha.Password;
-
+            string username = txUsuario.Text;
+            string password = txSenha.Password;
             string tipoLogin = (comboTipoLogin.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            string tabela = tipoLogin == "Vendedor" ? "fornecedor" : "cliente";
-
-            string col = tipoLogin == "Vendedor" ? "Fornecedor" : "Cliente";
-
-            using (var conn = Database.GetConnection())
+            if (string.IsNullOrEmpty(tipoLogin))
             {
-                try
+                MostrarSnackbar("Por favor, selecione o tipo de login.");
+                return;
+            }
+
+            try
+            {
+                if (tipoLogin == "Cliente")
                 {
-                    conn.Open();
-
-                    string query = $"SELECT {col}Id FROM {tabela} WHERE {col}Nome = @nome AND Senha = @senha";
-
-                    using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@nome", sUsername);
-                        cmd.Parameters.AddWithValue("@senha", sPassword);
-
-                        object result = cmd.ExecuteScalar();
-
-                        if (result != null)
-                        {
-                            int userId = Convert.ToInt32(result);
-                            var mainWindow = (MainWindow)Application.Current.MainWindow;
-
-                            if (tipoLogin == "Cliente")
-                            {
-                                mainWindow.MainFrame.Navigate(new CatalogoProdutosPage());
-                            }
-                            else if (tipoLogin == "Vendedor")
-                            {
-                                mainWindow.MainFrame.Navigate(new CatalogoVendedorPage(userId));
-                            }
-                        }
-                        else
-                        {
-                            MostrarSnackbar("Usuário ou senha inválidos!");
-                        }
-                    }
+                    AutenticarCliente(username, password);
                 }
-                catch (Exception ex)
+                else if (tipoLogin == "Vendedor")
                 {
-                    MostrarSnackbar("Erro ao conectar ao banco: " + ex.Message);
+                    AutenticarVendedor(username, password);
                 }
+            }
+            catch (Exception ex)
+            {
+                MostrarSnackbar("Erro de conexão: " + ex.Message);
+            }
+        }
+
+        private void AutenticarCliente(string username, string password)
+        {
+            var clienteService = new ClienteService();
+            Cliente clienteLogado = clienteService.Autenticar(username, password);
+
+            if (clienteLogado != null)
+            {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(clienteLogado));
+            }
+            else
+            {
+                MostrarSnackbar("Cliente ou senha inválidos!");
+            }
+        }
+
+        private void AutenticarVendedor(string username, string password)
+        {
+            var fornecedorService = new FornecedorService();
+            Fornecedor fornecedorLogado = fornecedorService.Autenticar(username, password);
+
+            if (fornecedorLogado != null)
+            {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.MainFrame.Navigate(new Vendedor.CatalogoVendedorPage(fornecedorLogado));
+            }
+            else
+            {
+                MostrarSnackbar("Vendedor ou senha inválidos!");
             }
         }
 
@@ -87,7 +80,7 @@ namespace ProjetoIntegradorVendas
         {
             Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter);
             dlgMsg.Appearance = ControlAppearance.Danger;
-            dlgMsg.Title = new System.Windows.Controls.TextBlock
+            dlgMsg.Title = new TextBlock
             {
                 Text = mensagem,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -95,10 +88,7 @@ namespace ProjetoIntegradorVendas
                 FontWeight = FontWeights.SemiBold
             };
             dlgMsg.IsCloseButtonEnabled = false;
-
-
             dlgMsg.Show();
         }
     }
 }
-

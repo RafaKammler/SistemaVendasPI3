@@ -50,7 +50,9 @@
             <ItemsControl ItemsSource="{Binding Produtos}" Background="#FF252525"  VerticalAlignment="Bottom" HorizontalContentAlignment="Stretch" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
+                        <WrapPanel IsItemsHost="True"
+                                   Orientation="Horizontal"
+                                   HorizontalAlignment="Center" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
