@@ -6,7 +6,7 @@ namespace ProjetoIntegradorVendas.Services
 {
     public class ClienteService
     {
-        public Cliente Autenticar(string nome, string senha)
+        public Classes.Cliente Autenticar(string nome, string senha)
         {
             // A query agora busca todas as colunas do cliente
             const string query = "SELECT * FROM cliente WHERE ClienteNome = @nome AND Senha = @senha";
@@ -37,9 +37,9 @@ namespace ProjetoIntegradorVendas.Services
             }
         }
 
-        private Cliente ConstruirCliente(MySqlDataReader reader)
+        private Classes.Cliente ConstruirCliente(MySqlDataReader reader)
         {
-            return new Cliente
+            return new Classes.Cliente
             {
                 ClienteID = reader.GetInt32("ClienteID"),
                 CidadeID = reader.IsDBNull(reader.GetOrdinal("CidadeID")) ? 0 : reader.GetInt32("CidadeID"),

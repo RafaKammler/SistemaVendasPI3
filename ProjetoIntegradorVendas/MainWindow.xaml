@@ -20,5 +20,9 @@
 
         <controls:TitleBar Title="Sistema de Vendas" Grid.Row="0"/>
         <Frame x:Name="MainFrame" Grid.Row="1" NavigationUIVisibility="Hidden"/>
+
+        <ui:Flyout x:Name="CartFlyout" Placement="Right"  Padding="0"
+                   BorderThickness="0"/>
+
     </Grid>
 </ui:FluentWindow>

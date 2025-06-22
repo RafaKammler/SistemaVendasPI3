@@ -16,10 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Cliente\CatalogoProdutosPage.xaml.cs">
+    <Compile Update="ClientePag\CatalogoProdutosPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Cliente\DetalheProdutoPage.xaml.cs">
+    <Compile Update="ClientePag\DetalheProdutoPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Vendedor\EditarProdutoPage.xaml.cs">

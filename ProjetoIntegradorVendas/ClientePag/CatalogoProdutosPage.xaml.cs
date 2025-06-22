@@ -27,9 +27,9 @@ namespace ProjetoIntegradorVendas
     public partial class CatalogoProdutosPage : Page
     {
 
-        private Cliente usuario;
+        private Classes.Cliente usuario;
         public ObservableCollection<Produto> Produtos { get; set; }
-        public CatalogoProdutosPage(Cliente usuario)
+        public CatalogoProdutosPage(Classes.Cliente usuario)
         {
             InitializeComponent();
 
@@ -39,7 +39,6 @@ namespace ProjetoIntegradorVendas
             this.usuario = usuario;
 
         }
-
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
         {
@@ -54,7 +53,7 @@ namespace ProjetoIntegradorVendas
                         mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(usuario));
                         break;
                     case "Carrinho":
-                        mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(usuario));
+                        AbrirFlyoutCarrinho(mainWindow);
                         break;
                     case "Configurações":
                         mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(usuario));
@@ -66,16 +65,6 @@ namespace ProjetoIntegradorVendas
             }
         }
 
-        private void NavigationViewItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void NavigationViewItem_Click_1(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
@@ -83,6 +72,25 @@ namespace ProjetoIntegradorVendas
             {
                 mainWindow.MainFrame.Navigate(new DetalheProdutoPage(produto, usuario));
             }
+        }
+
+        private void AbrirFlyoutCarrinho(MainWindow mainWindow)
+        {
+            var carrinhoService = new CarrinhoService();
+            var itensCarrinho = carrinhoService.ObterItensDoCarrinho(this.usuario.ClienteID);
+
+            double valorTotal = 0;
+            foreach (var item in itensCarrinho)
+            {
+                valorTotal += item.Produto.Preco * item.Quantidade;
+            }
+
+            var carrinhoControl = new ProjetoIntegradorVendas.Cliente.CarrinhoControl();
+            carrinhoControl.CartItemsListView.ItemsSource = itensCarrinho;
+            carrinhoControl.TotalCarrinho.Text = $"Total: {valorTotal:C}"; // Formata como moeda
+
+            mainWindow.CartFlyout.Content = carrinhoControl;
+            mainWindow.CartFlyout.IsOpen = true;
         }
     }
 }

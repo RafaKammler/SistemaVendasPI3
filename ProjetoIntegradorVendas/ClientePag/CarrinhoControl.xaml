@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="ProjetoIntegradorVendas.Cliente.CarrinhoControl"
+             x:Name="carrinhoUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ProjetoIntegradorVendas.Cliente"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="380">
+
+    <Grid Background="{DynamicResource ApplicationBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Meu Carrinho" FontSize="24" FontWeight="Bold"
+                   Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                   Margin="20,20,20,15"/>
+
+        <ListView Grid.Row="1" x:Name="CartItemsListView" Background="Transparent" BorderThickness="0"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" Padding="20,0">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,5,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="{Binding Produto.ImagemPath}" Width="60" Height="60" Margin="0,0,15,0"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Produto.Nome}" FontWeight="SemiBold" FontSize="16" TextTrimming="CharacterEllipsis"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <TextBlock Text="{Binding Quantidade, StringFormat='Quantidade: {0}'}"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="{Binding Produto.Preco, StringFormat='R$ {0:N2}'}"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ui:Button Grid.Column="2" Icon="{ui:SymbolIcon Delete24}" Appearance="Transparent"
+                                   Command="{Binding DataContext.RemoverItemCommand, ElementName=carrinhoUserControl}"
+                                   CommandParameter="{Binding}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Border Grid.Row="2" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                Padding="20,15,20,20">
+            <StackPanel>
+                <TextBlock x:Name="TotalCarrinho" Text="Total: R$ 0,00" FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <ui:Button Content="Finalizar Compra" Appearance="Primary" Margin="0,15,0,0"
+                           HorizontalAlignment="Stretch" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

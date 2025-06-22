@@ -20,7 +20,7 @@
                            PaneDisplayMode="Top"
                            Grid.Row="0">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Home">
+                <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.Home24}" />
                     </ui:NavigationViewItem.Icon>
@@ -164,6 +164,12 @@
                 </Border>
             </StackPanel>
         </ScrollViewer>
+        <ui:SnackbarPresenter Grid.Row="1" x:Name="RootSnackbarPresenter"
+                              Width="300"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Bottom"
+                              Margin="0,0,0,30"
+                              Panel.ZIndex="999"/>
     </Grid>
 
 

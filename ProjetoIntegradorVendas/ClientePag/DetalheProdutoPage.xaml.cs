@@ -14,7 +14,7 @@ namespace ProjetoIntegradorVendas
 {
     public partial class DetalheProdutoPage : Page, INotifyPropertyChanged
     {
-        private readonly Cliente _clienteLogado;
+        private readonly Classes.Cliente _clienteLogado;
         private readonly ComentarioService _comentarioService = new ComentarioService();
 
         public Produto Produto { get; set; }
@@ -33,15 +33,16 @@ namespace ProjetoIntegradorVendas
         }
 
         public ICommand SalvarComentarioCommand { get; }
+        public ICommand AdicionarCarrinhoCommand { get; }
 
-        public DetalheProdutoPage(Produto produto, Cliente cliente)
+        public DetalheProdutoPage(Produto produto, Classes.Cliente cliente)
         {
             InitializeComponent();
 
             this.Produto = produto;
             this._clienteLogado = cliente;
             SalvarComentarioCommand = new RelayCommand<object>(ExecutarSalvarComentario);
-
+            AdicionarCarrinhoCommand = new RelayCommand<object>(ExecutarAdicionarCarrinho);
             this.DataContext = this;
             CarregarComentarios();
         }
@@ -89,7 +90,6 @@ namespace ProjetoIntegradorVendas
             }
         }
 
-        // --- Navegação e Notificação de Propriedades ---
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
         {
@@ -104,7 +104,7 @@ namespace ProjetoIntegradorVendas
                         mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(_clienteLogado));
                         break;
                     case "Carrinho":
-                        // Implementar navegação para o carrinho
+                        AbrirFlyoutCarrinho(mainWindow);
                         break;
                     case "Configurações":
                         // Implementar navegação para configurações
@@ -116,11 +116,67 @@ namespace ProjetoIntegradorVendas
             }
         }
 
-        // 6. Implementação necessária para o INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ExecutarAdicionarCarrinho(object parameter)
+        {
+            if (this.Produto == null || _clienteLogado == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var carrinhoService = new CarrinhoService();
+
+                carrinhoService.AdicionarAoCarrinho(_clienteLogado.ClienteID, this.Produto.Id, 1);
+
+                MostrarSnackbar("Produto adicionado ao carrinho.",
+                    Wpf.Ui.Controls.ControlAppearance.Success);
+            }
+            catch (Exception ex)
+            {
+                MostrarSnackbar("Não foi possível adicionar o produto ao carrinho.",
+                    Wpf.Ui.Controls.ControlAppearance.Danger);
+            }
+        }
+        public void MostrarSnackbar(string mensagem, ControlAppearance aparencia)
+        {
+            Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter);
+            dlgMsg.Appearance = aparencia;
+            dlgMsg.Title = new System.Windows.Controls.TextBlock
+            {
+                Text = mensagem,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                FontWeight = FontWeights.SemiBold
+            };
+            dlgMsg.IsCloseButtonEnabled = false;
+
+
+            dlgMsg.Show();
+        }
+        private void AbrirFlyoutCarrinho(MainWindow mainWindow)
+        {
+            var carrinhoService = new CarrinhoService();
+            var itensCarrinho = carrinhoService.ObterItensDoCarrinho(this._clienteLogado.ClienteID);
+
+            double valorTotal = 0;
+            foreach (var item in itensCarrinho)
+            {
+                valorTotal += item.Produto.Preco * item.Quantidade;
+            }
+
+            var carrinhoControl = new ProjetoIntegradorVendas.Cliente.CarrinhoControl();
+            carrinhoControl.CartItemsListView.ItemsSource = itensCarrinho;
+            carrinhoControl.TotalCarrinho.Text = $"Total: {valorTotal:C}";
+
+            mainWindow.CartFlyout.Content = carrinhoControl;
+            mainWindow.CartFlyout.IsOpen = true;
         }
     }
 }

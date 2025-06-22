@@ -47,7 +47,7 @@ namespace ProjetoIntegradorVendas
         private void AutenticarCliente(string username, string password)
         {
             var clienteService = new ClienteService();
-            Cliente clienteLogado = clienteService.Autenticar(username, password);
+            Classes.Cliente clienteLogado = clienteService.Autenticar(username, password);
 
             if (clienteLogado != null)
             {

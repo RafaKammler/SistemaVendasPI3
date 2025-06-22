@@ -97,7 +97,7 @@ namespace ProjetoIntegradorVendas.Services
         private Comentario ConstruirComentario(MySqlDataReader reader)
         {
             // Cria um objeto Cliente apenas com as informações necessárias (ID e Nome).
-            var cliente = new Cliente
+            var cliente = new Classes.Cliente
             {
                 ClienteID = reader.GetInt32("ClienteID"),
                 ClienteNome = reader.GetString("ClienteNome")
