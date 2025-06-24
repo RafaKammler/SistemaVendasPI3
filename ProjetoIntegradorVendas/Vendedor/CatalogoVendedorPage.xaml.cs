@@ -17,6 +17,9 @@ using System.Windows.Shapes;
 using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
+using MessageBox = System.Windows.MessageBox;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxResult = System.Windows.MessageBoxResult;
 
 namespace ProjetoIntegradorVendas.Vendedor
 {
@@ -97,6 +100,34 @@ namespace ProjetoIntegradorVendas.Vendedor
             {
                 var mainWindow = (MainWindow)Application.Current.MainWindow;
                 mainWindow.MainFrame.Navigate(new EditarProduoPage(vendedorId, produtoSelecionado));
+            }
+        }
+        public void Deletar_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is Produto produtoParaDeletar)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    $"Você tem certeza que deseja deletar o produto '{produtoParaDeletar.Nome}'?\nEsta ação não pode ser desfeita.",
+                    "Confirmar Exclusão",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    var service = new ProdutoService();
+                    try
+                    {
+                        service.DeletarProduto(produtoParaDeletar.Id);
+
+                        Produtos.Remove(produtoParaDeletar);
+
+                        MessageBox.Show("Produto deletado com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Erro ao deletar o produto: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
             }
         }
     }

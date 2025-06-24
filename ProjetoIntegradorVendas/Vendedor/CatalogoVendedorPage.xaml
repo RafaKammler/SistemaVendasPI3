@@ -97,6 +97,11 @@
                                             Height="30"
                                             HorizontalAlignment="Center"
                                             Click="Editar_Click"/>
+                                    <Button Content="Excluir"
+                                            Width="100"
+                                            Height="30"
+                                            HorizontalAlignment="Center"
+                                            Click="Deletar_Click"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>

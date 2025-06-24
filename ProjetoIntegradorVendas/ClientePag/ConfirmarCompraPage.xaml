@@ -9,7 +9,7 @@
       d:DesignHeight="750" d:DesignWidth="1000"
       Title="ConfirmarCompraPage">
 
-    <Grid>
+    <Grid Background="#2B2D42" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -46,7 +46,7 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Background="{DynamicResource ApplicationBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="350" />

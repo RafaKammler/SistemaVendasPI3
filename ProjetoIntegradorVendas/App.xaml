@@ -9,7 +9,37 @@
            <ResourceDictionary.MergedDictionaries>
                 <markup:ThemesDictionary Theme="Dark" />
                 <markup:ControlsDictionary />
-            </ResourceDictionary.MergedDictionaries>  
-       </ResourceDictionary>  
+
+
+            </ResourceDictionary.MergedDictionaries>
+                  <SolidColorBrush x:Key="ApplicationBackgroundBrush" Color="#F4F7FC"/>
+        <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#2B2D42"/>
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#DCE1E8"/>
+        <SolidColorBrush x:Key="SecondaryCardBackgroundBrush" Color="#EDF2F4"/>
+        
+        <SolidColorBrush x:Key="PrimaryTextBrush" Color="#121212"/>
+        <SolidColorBrush x:Key="SecondaryTextBrush" Color="#6E6E73"/>
+        <SolidColorBrush x:Key="AccentTextBrush" Color="White"/>
+
+        <Style TargetType="markup:TextBox">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryAccentBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Page">
+            <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" />
+        </Style>
+        </ResourceDictionary>  
+
    </Application.Resources>  
 </Application>                

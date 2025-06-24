@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="380">
 
-    <Grid Background="{DynamicResource ApplicationBackgroundBrush}">
+    <Grid Background="#8D99AE">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

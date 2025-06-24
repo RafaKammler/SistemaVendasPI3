@@ -6,8 +6,9 @@
       xmlns:local="clr-namespace:ProjetoIntegradorVendas"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="CatalogoProdutos">
+      d:DesignHeight="800" d:DesignWidth="1280"
+      Title="CatalogoProdutos"
+      Background="{DynamicResource ApplicationBackgroundBrush}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -16,9 +17,12 @@
         </Grid.RowDefinitions>
 
         <ui:NavigationView x:Name="NavigationViewControl"
+                           Grid.Row="0"
                            UseLayoutRounding="False"
-                           PaneDisplayMode="Top"
-                           Grid.Row="0">
+                           PaneDisplayMode="Top" Foreground="#FF2B2D42" IsPaneVisible="True" SnapsToDevicePixels="True">
+            <ui:NavigationView.Background>
+                <SolidColorBrush Opacity="0.995" Color="#FF2B2D42"/>
+            </ui:NavigationView.Background>
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
@@ -30,7 +34,7 @@
                         <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.Cart24}" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Configuração" Click="NavigationView_OnItemInvoked">
+                <ui:NavigationViewItem Content="Configurações" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.Settings24}" />
                     </ui:NavigationViewItem.Icon>
@@ -46,51 +50,55 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
-            <ItemsControl ItemsSource="{Binding Produtos}" Background="#FF252525"  VerticalAlignment="Bottom" HorizontalContentAlignment="Stretch" >
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Produtos}" Margin="20">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True"
                                    Orientation="Horizontal"
-                                   HorizontalAlignment="Center" />
+                                   HorizontalAlignment="Left" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="250" Height="325" Margin="10"
-                                    CornerRadius="10" 
-                                    Padding="10" 
-                                    MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp" Tag="{Binding}">
+                        <Border Width="280" Margin="15"
+                                Background="{DynamicResource CardBackgroundBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp" 
+                                Tag="{Binding}"
+                                Cursor="Hand">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="1" Color="#E0E0E0" Opacity="0.4" BlurRadius="10"/>
+                            </Border.Effect>
                             <StackPanel>
-                                <Image Source="{Binding ImagemPath}" 
-                                           Height="175" Width="175" 
-                                           Stretch="UniformToFill"
-                                           Margin="0,0,0,10"/>
-                                <StackPanel Margin="10" Orientation="Vertical">
-                                    <!-- Nome do Produto -->
+                                <Border CornerRadius="8,8,0,0" Height="200">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding ImagemPath}" Stretch="Uniform"/>
+                                    </Border.Background>
+                                </Border>
+
+                                <StackPanel Margin="15,12">
                                     <TextBlock Text="{Binding Nome}"
-                                                   FontWeight="Bold"
-                                                   FontSize="20"
-                                                   Foreground="White"
-                                                   HorizontalAlignment="Center"
-                                                   TextWrapping="Wrap" />
+                                               FontWeight="Bold"
+                                               FontSize="18"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
+                                               TextWrapping="Wrap"
+                                               Height="44"/>
 
-                                    <!-- Preço formatado -->
                                     <TextBlock Text="{Binding Preco, StringFormat=R$ {0:F2}}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="LightGreen"
-                                                   HorizontalAlignment="Center"
-                                                   FontSize="20"
-                                                   Margin="0,6,0,0" />
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource PrimaryAccentBrush}"
+                                               FontSize="22"
+                                               Margin="0,8,0,0"/>
 
-                                    <!-- Vendido por -->
-                                    <TextBlock Foreground="LightGray"
-                                                   FontSize="14"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,4,0,0">
-                                            <Run Text="Vendido por: " />
-                                            <Run Text="{Binding IdFornecedor.FornecedorNome}" />
+                                    <TextBlock Foreground="{DynamicResource SecondaryTextBrush}"
+                                               FontSize="12"
+                                               Margin="0,4,0,0">
+                                        <Run Text="Vendido por: " />
+                                        <Run Text="{Binding IdFornecedor.FornecedorNome}" FontWeight="SemiBold"/>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
@@ -100,6 +108,4 @@
             </ItemsControl>
         </ScrollViewer>
     </Grid>
-
-
 </Page>

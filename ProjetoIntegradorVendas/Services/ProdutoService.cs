@@ -178,5 +178,43 @@ namespace ProjetoIntegradorVendas.Services
                 throw;
             }
         }
+        public void DeletarProduto(int produtoId)
+        {
+            using var conn = Database.GetConnection();
+            conn.Open();
+            using var transaction = conn.BeginTransaction();
+
+            try
+            {
+                const string queryComentarios = "DELETE FROM Comentario WHERE ProdutoID = @ProdutoID";
+                using (var cmdComentarios = new MySqlCommand(queryComentarios, conn, transaction))
+                {
+                    cmdComentarios.Parameters.AddWithValue("@ProdutoID", produtoId);
+                    cmdComentarios.ExecuteNonQuery();
+                }
+
+                const string queryPedidoXProduto = "DELETE FROM pedidoxproduto WHERE ProdutoID = @ProdutoID";
+                using (var cmdPedidoXProduto = new MySqlCommand(queryPedidoXProduto, conn, transaction))
+                {
+                    cmdPedidoXProduto.Parameters.AddWithValue("@ProdutoID", produtoId);
+                    cmdPedidoXProduto.ExecuteNonQuery();
+                }
+
+                const string queryProduto = "DELETE FROM produto WHERE ProdutoID = @ProdutoID";
+                using (var cmdProduto = new MySqlCommand(queryProduto, conn, transaction))
+                {
+                    cmdProduto.Parameters.AddWithValue("@ProdutoID", produtoId);
+                    cmdProduto.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Console.WriteLine($"Erro ao deletar produto: {ex.Message}");
+                throw;
+            }
+        }
     }
 }
