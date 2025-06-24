@@ -1,44 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using Microsoft.Win32;
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ProjetoIntegradorVendas.Services;
 using ProjetoIntegradorVendas.Vendedor;
 using Wpf.Ui.Controls;
-using Wpf.Ui.Interop.WinDef;
+using TextBlock = Wpf.Ui.Controls.TextBlock;
 
 namespace ProjetoIntegradorVendas
 {
-    /// <summary>
-    /// Interaction logic for CadastroProdutosPage.xaml
-    /// </summary>
-   
     public partial class EditarProduoPage : Page
     {
         public Produto Produto { get; set; }
-
         private Fornecedor vendedorId;
+        private string caminhoNovaImagem; // Armazena o caminho original da NOVA imagem selecionada
 
         public EditarProduoPage(Fornecedor vendedorId, Produto produto)
         {
             InitializeComponent();
-
             this.vendedorId = vendedorId;
             this.Produto = produto;
             this.DataContext = this;
+
+            if (!string.IsNullOrEmpty(produto.Imagem))
+            {
+                txbNomeArquivo.Text = "Imagem atual: " + Path.GetFileName(produto.Imagem);
+            }
         }
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
@@ -58,93 +47,99 @@ namespace ProjetoIntegradorVendas
                         break;
                 }
             }
-
         }
-        private void CadastrarProduto_Click(object sender, RoutedEventArgs e)
+
+        private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            string nomeProduto = txNomeProduto.Text;
-            string descricaoProduto = txDescricaoProduto.Text;
-
-            if (!Double.TryParse(txPrecoProduto.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double preco))
+            OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                MostrarSnackbar("O preço do produto deve ser um número válido.", ControlAppearance.Danger);
-                return;
-            }
-
-            if (!int.TryParse(txEstoqueProduto.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out int estoque))
-            {
-                MostrarSnackbar("O estoque deve ser um número inteiro.", ControlAppearance.Danger);
-                return;
-            }
-
-            var fornecedorService = new FornecedorService();
-            Fornecedor fornecedor = fornecedorService.encontrarFornecedor(vendedorId);
-
-            if (fornecedor == null)
-            {
-                MostrarSnackbar("Fornecedor não encontrado.", ControlAppearance.Danger);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(nomeProduto))
-            {
-                MostrarSnackbar("O nome do produto é obrigatório.", ControlAppearance.Danger);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(descricaoProduto))
-            {
-                MostrarSnackbar("A descrição do produto é obrigatória.", ControlAppearance.Danger);
-                return;
-            }
-
-            var produto = new Produto
-            {
-                IdFornecedor = fornecedor,
-                Nome = nomeProduto,
-                Descricao = descricaoProduto,
-                Preco = preco,
-                Imagem = "",
-                Estoque = estoque,
-                ImagemPath = null 
+                Filter = "Arquivos de Imagem (*.png;*.jpeg;*.jpg;*.webp)|*.png;*.jpeg;*.jpg;*.webp|Todos os arquivos (*.*)|*.*"
             };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                caminhoNovaImagem = openFileDialog.FileName;
+                txbNomeArquivo.Text = "Nova imagem: " + Path.GetFileName(caminhoNovaImagem);
+            }
+        }
+
+        private string CopiarImagemERetornarCaminhoRelativo(string caminhoOrigem)
+        {
+            try
+            {
+                string pastaDestino = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "resources", "images");
+                Directory.CreateDirectory(pastaDestino);
+
+                string extensao = Path.GetExtension(caminhoOrigem);
+                string nomeArquivoUnico = Guid.NewGuid().ToString() + extensao;
+
+                string caminhoDestinoCompleto = Path.Combine(pastaDestino, nomeArquivoUnico);
+                File.Copy(caminhoOrigem, caminhoDestinoCompleto);
+
+                return Path.Combine("/resources", "images", nomeArquivoUnico).Replace('\\', '/');
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro ao copiar arquivo: " + ex.Message);
+                return null;
+            }
+        }
+
+        private void SalvarProduto_Click(object sender, RoutedEventArgs e)
+        {
+            // Atualiza as propriedades do produto com os valores da tela
+            Produto.Nome = txNomeProduto.Text;
+            Produto.Descricao = txDescricaoProduto.Text;
+            Produto.Preco = (double)(txPrecoProduto.Value ?? 0);
+            Produto.Estoque = (int)(txEstoqueProduto.Value ?? 0);
+
+            // Se uma nova imagem foi selecionada, processa ela
+            if (!string.IsNullOrEmpty(caminhoNovaImagem))
+            {
+                string caminhoRelativoParaSalvar = CopiarImagemERetornarCaminhoRelativo(caminhoNovaImagem);
+                if (caminhoRelativoParaSalvar == null)
+                {
+                    MostrarSnackbar("Ocorreu um erro ao processar a nova imagem.", ControlAppearance.Danger);
+                    return;
+                }
+                // Atualiza a propriedade Imagem do produto com o NOVO caminho relativo
+                Produto.Imagem = caminhoRelativoParaSalvar;
+            }
+            // Se nenhuma imagem nova foi selecionada, a propriedade Produto.Imagem manterá seu valor antigo.
+
+            if (string.IsNullOrEmpty(Produto.Nome) || string.IsNullOrEmpty(Produto.Descricao))
+            {
+                MostrarSnackbar("Nome e Descrição são obrigatórios.", ControlAppearance.Danger);
+                return;
+            }
 
             var service = new ProdutoService();
             try
             {
-                service.CadastrarProduto(produto);
-                MostrarSnackbar("Produto cadastrado com sucesso.", ControlAppearance.Success);
-                txNomeProduto.Clear();
-                txDescricaoProduto.Clear();
-                txPrecoProduto.Clear();
-                txEstoqueProduto.Clear();
+                service.AtualizarProduto(Produto);
+                MostrarSnackbar("Produto atualizado com sucesso!", ControlAppearance.Success);
             }
             catch (Exception ex)
             {
-                MostrarSnackbar("Erro ao cadastrar produto: " + ex.Message, ControlAppearance.Danger);
+                MostrarSnackbar("Erro ao atualizar produto: " + ex.Message, ControlAppearance.Danger);
             }
         }
 
         public void MostrarSnackbar(string mensagem, ControlAppearance aparencia)
         {
-            Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter);
-            dlgMsg.Appearance = aparencia;
-            dlgMsg.Title = new System.Windows.Controls.TextBlock
+            Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter)
             {
-                Text = mensagem,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                TextAlignment = TextAlignment.Center,
-                FontWeight = FontWeights.SemiBold
+                Appearance = aparencia,
+                Title = new TextBlock
+                {
+                    Text = mensagem,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextAlignment = TextAlignment.Center,
+                    FontWeight = FontWeights.SemiBold
+                },
+                IsCloseButtonEnabled = false
             };
-            dlgMsg.IsCloseButtonEnabled = false;
-
-
             dlgMsg.Show();
         }
-        private void NumberBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
     }
 }

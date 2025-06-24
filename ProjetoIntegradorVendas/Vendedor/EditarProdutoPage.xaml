@@ -7,7 +7,7 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
       d:DesignHeight="720" d:DesignWidth="1280"
-      Title="CadastroProdutosPage">
+      Title="EditarProdutoPage">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -36,40 +36,50 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
-
-       
-        <ScrollViewer Grid.Row="1"  VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
-
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="30" Width="400" HorizontalAlignment="Center">
-               
+
                 <TextBlock Text="Edição do produto" FontSize="28" FontWeight="Bold" Foreground="White" Margin="0,0,0,20" HorizontalAlignment="Center"/>
 
                 <TextBlock Text="Nome" Foreground="White" Margin="0,10,0,5"/>
-                <TextBox x:Name="txNomeProduto" Text="{Binding Produto.Nome}" Height="40" />
+                <TextBox x:Name="txNomeProduto" Text="{Binding Produto.Nome}" Height="40" MaxLength="19"/>
 
                 <TextBlock Text="Preço" Foreground="White" Margin="0,10,0,5"/>
-                <ui:NumberBox x:Name="txPrecoProduto" Icon="NumberSymbolSquare24" PlaceholderText="Preço"/>
+                <ui:NumberBox x:Name="txPrecoProduto" Value="{Binding Produto.Preco}" Icon="NumberSymbolSquare24" PlaceholderText="Preço"/>
 
                 <TextBlock Text="Descrição" Foreground="White" Margin="0,10,0,5"/>
                 <TextBox x:Name="txDescricaoProduto" Text="{Binding Produto.Descricao}" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
 
                 <TextBlock Text="Caminho da Imagem" Foreground="White" Margin="0,10,0,5"/>
-                <ui:Button
-                    Grid.Column="0"
-                    Command="{Binding ViewModel.OpenFileCommand}"
-                    Content="Open a file" />
-                <TextBlock Text="Estoque" Foreground="White" Margin="0,10,0,5"/>
-                <ui:NumberBox x:Name="txEstoqueProduto" Icon="NumberSymbolSquare24" PlaceholderText="Quantidade em Estoque"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Button Content="Cadastrar Produto"
+                    <ui:Button Grid.Column="0" 
+                               Click="OpenFile_Click" 
+                               Content="Selecionar Nova Imagem" />
+
+                    <TextBlock x:Name="txbNomeArquivo"
+                               Grid.Column="1"
+                               TextWrapping="Wrap"  Foreground="White"
+                               VerticalAlignment="Center"
+                               Margin="10,0,0,0" />
+                </Grid>
+
+                <TextBlock Text="Estoque" Foreground="White" Margin="0,10,0,5"/>
+                <ui:NumberBox x:Name="txEstoqueProduto" Value="{Binding Produto.Estoque}" Icon="NumberSymbolSquare24" PlaceholderText="Quantidade em Estoque"/>
+
+                <Button Content="Salvar Alterações"
                         Height="40"
                         Margin="0,20,0,0"
                         Background="DarkOrange"
                         Foreground="White"
                         FontWeight="Bold"
-                        Click="CadastrarProduto_Click"
+                        Click="SalvarProduto_Click"
                         HorizontalAlignment="Center"/>
-                
+
             </StackPanel>
         </ScrollViewer>
         <ui:SnackbarPresenter Grid.Row="1" x:Name="RootSnackbarPresenter"

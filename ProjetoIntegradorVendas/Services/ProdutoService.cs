@@ -41,7 +41,6 @@ namespace ProjetoIntegradorVendas.Services
             return ExecutarConsultaProdutos(query, parametros);
         }
 
-        // --- Método privado reutilizável ---
         private ObservableCollection<Produto> ExecutarConsultaProdutos(string query, Dictionary<string, object>? parametros = null)
         {
             var produtos = new ObservableCollection<Produto>();
@@ -121,8 +120,8 @@ namespace ProjetoIntegradorVendas.Services
         public void CadastrarProduto(Produto produto)
         {
             const string query = @"
-        INSERT INTO produto (FornecedorID, Nome, Descricao, Preco, Imagem, Estoque)
-        VALUES (@FornecedorID, @Nome, @Descricao, @Preco, @Imagem, @Estoque);";
+            INSERT INTO produto (FornecedorID, Nome, Descricao, Preco, Imagem, Estoque)
+            VALUES (@FornecedorID, @Nome, @Descricao, @Preco, @Imagem, @Estoque);";
 
             using var conn = Database.GetConnection();
             try
@@ -142,6 +141,40 @@ namespace ProjetoIntegradorVendas.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao cadastrar produto: {ex.Message}");
+                throw;
+            }
+        }
+
+        // NOVO MÉTODO ADICIONADO AQUI
+        public void AtualizarProduto(Produto produto)
+        {
+            const string query = @"
+                UPDATE produto SET
+                    Nome = @Nome,
+                    Descricao = @Descricao,
+                    Preco = @Preco,
+                    Estoque = @Estoque,
+                    Imagem = @Imagem
+                WHERE ProdutoID = @ProdutoID;";
+
+            using var conn = Database.GetConnection();
+            try
+            {
+                conn.Open();
+                using var cmd = new MySqlCommand(query, conn);
+
+                cmd.Parameters.AddWithValue("@Nome", produto.Nome);
+                cmd.Parameters.AddWithValue("@Descricao", produto.Descricao);
+                cmd.Parameters.AddWithValue("@Preco", produto.Preco);
+                cmd.Parameters.AddWithValue("@Estoque", produto.Estoque);
+                cmd.Parameters.AddWithValue("@Imagem", produto.Imagem);
+                cmd.Parameters.AddWithValue("@ProdutoID", produto.Id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao atualizar produto: {ex.Message}");
                 throw;
             }
         }

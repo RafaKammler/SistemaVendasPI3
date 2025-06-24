@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MySqlX.XDevAPI;
 using ProjetoIntegradorVendas.Classes;
+using ProjetoIntegradorVendas.ClientePag;
 using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Input;
@@ -16,6 +17,7 @@ namespace ProjetoIntegradorVendas
     {
         private readonly Classes.Cliente _clienteLogado;
         private readonly ComentarioService _comentarioService = new ComentarioService();
+        private readonly CarrinhoService _carrinhoService = new CarrinhoService();
 
         public Produto Produto { get; set; }
 
@@ -33,6 +35,7 @@ namespace ProjetoIntegradorVendas
         }
 
         public ICommand SalvarComentarioCommand { get; }
+        public ICommand ComprarCommand { get; }
         public ICommand AdicionarCarrinhoCommand { get; }
 
         public DetalheProdutoPage(Produto produto, Classes.Cliente cliente)
@@ -41,8 +44,12 @@ namespace ProjetoIntegradorVendas
 
             this.Produto = produto;
             this._clienteLogado = cliente;
+
+            // Inicialize os comandos no construtor
             SalvarComentarioCommand = new RelayCommand<object>(ExecutarSalvarComentario);
+            ComprarCommand = new RelayCommand<object>(ExecutarComprarAgora);
             AdicionarCarrinhoCommand = new RelayCommand<object>(ExecutarAdicionarCarrinho);
+
             this.DataContext = this;
             CarregarComentarios();
         }
@@ -80,7 +87,6 @@ namespace ProjetoIntegradorVendas
             {
                 _comentarioService.SalvarComentario(novoComentario);
 
-                // Agora o objeto está completo e a UI será atualizada corretamente.
                 Comentarios.Insert(0, novoComentario);
                 NovoComentarioTexto = string.Empty;
             }
@@ -90,6 +96,21 @@ namespace ProjetoIntegradorVendas
             }
         }
 
+        private void ExecutarComprarAgora(object parameter)
+        {
+            try
+            {
+                _carrinhoService.AdicionarAoCarrinho(_clienteLogado.ClienteID, Produto.Id, 1);
+
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.MainFrame.Navigate(new ConfirmarCompraPage(_clienteLogado));
+            }
+            catch (Exception ex)
+            {
+                MostrarSnackbar("Erro ao iniciar a compra.", ControlAppearance.Danger);
+                Console.WriteLine($"Erro no ComprarAgora: {ex.Message}");
+            }
+        }
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
         {
@@ -107,7 +128,6 @@ namespace ProjetoIntegradorVendas
                         AbrirFlyoutCarrinho(mainWindow);
                         break;
                     case "Configurações":
-                        // Implementar navegação para configurações
                         break;
                     case "Logout":
                         mainWindow.MainFrame.Navigate(new LoginPage());

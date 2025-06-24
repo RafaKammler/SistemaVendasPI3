@@ -7,7 +7,8 @@
         public int ProdutoID { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataAdicionado { get; set; }
-
+        
         public Produto Produto { get; set; }
+        public double Subtotal => Produto != null ? Produto.Preco * Quantidade : 0;
     }
 }

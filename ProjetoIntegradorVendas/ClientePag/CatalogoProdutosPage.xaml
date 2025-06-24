@@ -71,7 +71,7 @@
                                     <!-- Nome do Produto -->
                                     <TextBlock Text="{Binding Nome}"
                                                    FontWeight="Bold"
-                                                   FontSize="25"
+                                                   FontSize="20"
                                                    Foreground="White"
                                                    HorizontalAlignment="Center"
                                                    TextWrapping="Wrap" />

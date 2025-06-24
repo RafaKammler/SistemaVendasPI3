@@ -1,35 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ProjetoIntegradorVendas.Classes;
+using ProjetoIntegradorVendas.Services;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ProjetoIntegradorVendas.Vendedor;
 using Wpf.Ui.Controls;
+using System;
 
-namespace ProjetoIntegradorVendas
+namespace ProjetoIntegradorVendas.Vendedor
 {
-    /// <summary>
-    /// Interaction logic for DetalheProdutoVendedorPage.xaml
-    /// </summary>
     public partial class DetalheProdutoVendedorPage : Page
     {
         public Produto Produto { get; set; }
-        private Fornecedor VendedorID {get; set; }
-        public DetalheProdutoVendedorPage(Produto produto, Fornecedor vendedorID)
+        private Fornecedor VendedorLogado { get; set; }
+        public ObservableCollection<Comentario> Comentarios { get; set; }
+        private readonly ComentarioService _comentarioService = new ComentarioService();
+
+        public DetalheProdutoVendedorPage(Produto produto, Fornecedor vendedor)
         {
             InitializeComponent();
             this.Produto = produto;
+            this.VendedorLogado = vendedor;
             this.DataContext = this;
-            this.VendedorID = vendedorID;
+
+            CarregarComentarios();
+        }
+
+        private void CarregarComentarios()
+        {
+            try
+            {
+                Comentarios = _comentarioService.BuscarComentariosPorProduto(this.Produto.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Falha ao carregar comentários: {ex.Message}");
+                Comentarios = new ObservableCollection<Comentario>();
+            }
         }
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
@@ -42,13 +48,19 @@ namespace ProjetoIntegradorVendas
                 switch (content)
                 {
                     case "Home":
-                        mainWindow.MainFrame.Navigate(new CatalogoVendedorPage(VendedorID));
+                        mainWindow.MainFrame.Navigate(new CatalogoVendedorPage(VendedorLogado));
                         break;
                     case "Logout":
                         mainWindow.MainFrame.Navigate(new LoginPage());
                         break;
                 }
             }
+        }
+
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.MainFrame.Navigate(new EditarProduoPage(this.VendedorLogado, this.Produto));
         }
     }
 }
