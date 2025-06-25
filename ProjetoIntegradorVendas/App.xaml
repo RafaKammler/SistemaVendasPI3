@@ -9,8 +9,6 @@
            <ResourceDictionary.MergedDictionaries>
                 <markup:ThemesDictionary Theme="Dark" />
                 <markup:ControlsDictionary />
-
-
             </ResourceDictionary.MergedDictionaries>
                   <SolidColorBrush x:Key="ApplicationBackgroundBrush" Color="#F4F7FC"/>
         <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#2B2D42"/>

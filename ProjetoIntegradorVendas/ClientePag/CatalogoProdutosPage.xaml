@@ -18,11 +18,21 @@
 
         <ui:NavigationView x:Name="NavigationViewControl"
                            Grid.Row="0"
-                           UseLayoutRounding="False"
-                           PaneDisplayMode="Top" Foreground="#FF2B2D42" IsPaneVisible="True" SnapsToDevicePixels="True">
-            <ui:NavigationView.Background>
-                <SolidColorBrush Opacity="0.995" Color="#FF2B2D42"/>
-            </ui:NavigationView.Background>
+                           PaneDisplayMode="Top"
+                           IsPaneVisible="True">
+            <ui:NavigationView.Resources>
+                <Style TargetType="ui:NavigationViewItem">
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Cursor" Value="Hand"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="ui:SymbolIcon">
+                    <Setter Property="Foreground" Value="Black"/>
+                </Style>
+            </ui:NavigationView.Resources>
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
@@ -40,7 +50,6 @@
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
-
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem x:Name="Logout" Content="Logout" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
@@ -56,30 +65,26 @@
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True"
                                    Orientation="Horizontal"
-                                   HorizontalAlignment="Left" />
+                                   HorizontalAlignment="Center" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Width="280" Margin="15"
                                 Background="{DynamicResource CardBackgroundBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="8"
-                                MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp" 
-                                Tag="{Binding}"
-                                Cursor="Hand">
+                                CornerRadius="8">
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="1" Color="#E0E0E0" Opacity="0.4" BlurRadius="10"/>
                             </Border.Effect>
                             <StackPanel>
-                                <Border CornerRadius="8,8,0,0" Height="200">
+                                <Border CornerRadius="8,8,0,0" Height="200"
+                                        MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp" Tag="{Binding}" Cursor="Hand">
                                     <Border.Background>
                                         <ImageBrush ImageSource="{Binding ImagemPath}" Stretch="Uniform"/>
                                     </Border.Background>
                                 </Border>
-
                                 <StackPanel Margin="15,12">
                                     <TextBlock Text="{Binding Nome}"
                                                FontWeight="Bold"
@@ -87,19 +92,24 @@
                                                Foreground="{DynamicResource PrimaryTextBrush}"
                                                TextWrapping="Wrap"
                                                Height="44"/>
-
                                     <TextBlock Text="{Binding Preco, StringFormat=R$ {0:F2}}"
                                                FontWeight="SemiBold"
                                                Foreground="{DynamicResource PrimaryAccentBrush}"
                                                FontSize="22"
                                                Margin="0,8,0,0"/>
-
                                     <TextBlock Foreground="{DynamicResource SecondaryTextBrush}"
                                                FontSize="12"
                                                Margin="0,4,0,0">
                                         <Run Text="Vendido por: " />
                                         <Run Text="{Binding IdFornecedor.FornecedorNome}" FontWeight="SemiBold"/>
                                     </TextBlock>
+
+                                    <ui:Button Content="Adicionar ao Carrinho"
+                                               Icon="{ui:SymbolIcon Cart24}"
+                                               Appearance="Primary"
+                                               Margin="0,10,0,0"
+                                               HorizontalAlignment="Stretch"
+                                               Click="AddToCart_Click"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -107,5 +117,12 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <ui:SnackbarPresenter Grid.Row="1" x:Name="RootSnackbarPresenter"
+                              Width="300"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Bottom"
+                              Margin="0,0,0,30"
+                              Panel.ZIndex="999"/>
     </Grid>
 </Page>

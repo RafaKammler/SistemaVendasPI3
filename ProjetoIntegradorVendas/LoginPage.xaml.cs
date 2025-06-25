@@ -90,5 +90,6 @@ namespace ProjetoIntegradorVendas
             dlgMsg.IsCloseButtonEnabled = false;
             dlgMsg.Show();
         }
+
     }
 }

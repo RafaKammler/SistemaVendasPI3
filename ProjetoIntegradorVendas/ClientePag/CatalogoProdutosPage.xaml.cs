@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using ProjetoIntegradorVendas.Classes;
 using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
+using Button = System.Windows.Controls.Button;
 
 namespace ProjetoIntegradorVendas
 {
@@ -29,6 +30,7 @@ namespace ProjetoIntegradorVendas
 
         private Classes.Cliente usuario;
         public ObservableCollection<Produto> Produtos { get; set; }
+        private readonly CarrinhoService _carrinhoService = new CarrinhoService();
         public CatalogoProdutosPage(Classes.Cliente usuario)
         {
             InitializeComponent();
@@ -92,5 +94,43 @@ namespace ProjetoIntegradorVendas
             mainWindow.CartFlyout.Content = carrinhoControl;
             mainWindow.CartFlyout.IsOpen = true;
         }
+        private void AddToCart_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is Produto produto)
+            {
+                try
+                {
+                    // Utiliza o serviço para adicionar o item ao carrinho
+                    _carrinhoService.AdicionarAoCarrinho(usuario.ClienteID, produto.Id, 1);
+
+                    MostrarSnackbar($"'{produto.Nome}' foi adicionado ao carrinho!", ControlAppearance.Success);
+                }
+                catch (Exception ex)
+                {
+                    MostrarSnackbar("Não foi possível adicionar o produto ao carrinho.", ControlAppearance.Danger);
+                    // É uma boa prática logar o erro para depuração
+                    Console.WriteLine($"Erro ao adicionar item ao carrinho: {ex.Message}");
+                }
+            }
+        }
+
+        public void MostrarSnackbar(string mensagem, ControlAppearance aparencia)
+        {
+            Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter);
+            dlgMsg.Appearance = aparencia;
+            dlgMsg.Title = new System.Windows.Controls.TextBlock
+            {
+                Text = mensagem,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                FontWeight = FontWeights.SemiBold
+            };
+            dlgMsg.IsCloseButtonEnabled = false;
+
+
+            dlgMsg.Show();
+        }
     }
 }
+
+
