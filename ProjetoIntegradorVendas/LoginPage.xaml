@@ -35,10 +35,22 @@
                            Margin="0,0,0,30"/>
 
                 <TextBlock Text="Usuário" Margin="0,0,0,5" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                <TextBox x:Name="txUsuario" Margin="0,0,0,15" Grid.IsSharedSizeScope="True" Background="#7F6D6D6D"/>
+                <ui:TextBox x:Name="txUsuario" Padding="5"
+                            Margin="0,0,0,15"
+                            FontSize="14"
+                            Background="White" 
+                            Foreground="Black" 
+                            BorderBrush="Gray" 
+                            BorderThickness="1"/>
 
                 <TextBlock Text="Senha" Margin="0,0,0,5" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                <PasswordBox x:Name="txSenha" Margin="0,0,0,20" Background="#7F6D6D6D"/>
+                <ui:PasswordBox x:Name="txSenha" Padding="5"
+                             Margin="0,0,0,15"
+                             FontSize="14"
+                             Background="White" 
+                             Foreground="Black" 
+                             BorderBrush="Gray" 
+                             BorderThickness="1"/>
 
                 <TextBlock Text="Entrar como" Margin="0,0,0,5" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                 <ComboBox x:Name="comboTipoLogin" SelectedIndex="0" Margin="0,0,0,30" Background="#7F6D6D6D" Foreground="Black">

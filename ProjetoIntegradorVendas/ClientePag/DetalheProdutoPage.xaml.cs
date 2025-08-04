@@ -16,14 +16,17 @@ namespace ProjetoIntegradorVendas
     public partial class DetalheProdutoPage : Page, INotifyPropertyChanged
     {
         private readonly Classes.Cliente _clienteLogado;
-        private readonly ComentarioService _comentarioService = new ComentarioService();
-        private readonly CarrinhoService _carrinhoService = new CarrinhoService();
+        private readonly ComentarioService _comentarioService = new();
+        private readonly CarrinhoService _carrinhoService = new();
+        private readonly CepService _cepService = new();
 
         public Produto Produto { get; set; }
 
         public ObservableCollection<Comentario> Comentarios { get; set; }
 
         private string _novoComentarioTexto;
+        private decimal _valorFrete;
+        public decimal ValorFrete { get;set; }
         public string NovoComentarioTexto
         {
             get => _novoComentarioTexto;
@@ -37,6 +40,7 @@ namespace ProjetoIntegradorVendas
         public ICommand SalvarComentarioCommand { get; }
         public ICommand ComprarCommand { get; }
         public ICommand AdicionarCarrinhoCommand { get; }
+        public ICommand BuscarCepCommand { get; }
 
         public DetalheProdutoPage(Produto produto, Classes.Cliente cliente)
         {
@@ -45,10 +49,10 @@ namespace ProjetoIntegradorVendas
             this.Produto = produto;
             this._clienteLogado = cliente;
 
-            // Inicialize os comandos no construtor
             SalvarComentarioCommand = new RelayCommand<object>(ExecutarSalvarComentario);
             ComprarCommand = new RelayCommand<object>(ExecutarComprarAgora);
             AdicionarCarrinhoCommand = new RelayCommand<object>(ExecutarAdicionarCarrinho);
+            BuscarCepCommand = new RelayCommand<object>(ExecutarBuscarViaCep);
 
             this.DataContext = this;
             CarregarComentarios();
@@ -60,7 +64,7 @@ namespace ProjetoIntegradorVendas
             {
                 var comentariosDoBanco = _comentarioService.BuscarComentariosPorProduto(this.Produto.Id);
                 Comentarios = new ObservableCollection<Comentario>(comentariosDoBanco);
-                OnPropertyChanged(nameof(Comentarios)); // Notifica a UI que a coleção foi carregada
+                OnPropertyChanged(nameof(Comentarios));
             }
             catch (Exception ex)
             {
@@ -137,6 +141,7 @@ namespace ProjetoIntegradorVendas
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -164,6 +169,7 @@ namespace ProjetoIntegradorVendas
                     Wpf.Ui.Controls.ControlAppearance.Danger);
             }
         }
+
         public void MostrarSnackbar(string mensagem, ControlAppearance aparencia)
         {
             Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter);
@@ -180,6 +186,7 @@ namespace ProjetoIntegradorVendas
 
             dlgMsg.Show();
         }
+
         private void AbrirFlyoutCarrinho(MainWindow mainWindow)
         {
             var carrinhoService = new CarrinhoService();
@@ -191,12 +198,49 @@ namespace ProjetoIntegradorVendas
                 valorTotal += item.Produto.Preco * item.Quantidade;
             }
 
-            var carrinhoControl = new ProjetoIntegradorVendas.Cliente.CarrinhoControl();
+            var carrinhoControl = new ProjetoIntegradorVendas.Cliente.CarrinhoControl(_clienteLogado);
             carrinhoControl.CartItemsListView.ItemsSource = itensCarrinho;
             carrinhoControl.TotalCarrinho.Text = $"Total: {valorTotal:C}";
 
             mainWindow.CartFlyout.Content = carrinhoControl;
             mainWindow.CartFlyout.IsOpen = true;
+        }
+
+        private async void ExecutarBuscarViaCep(object parameter)
+        {
+            string cep = txCep.Text;
+            if (!string.IsNullOrWhiteSpace(cep) && cep.Length == 8)
+            {
+                var cepService = new CepService();
+                Endereco endereco = await cepService.BuscarEnderecoPorCep(cep);
+
+                if (endereco != null)
+                {
+                    tbBairro.Text = endereco.Bairro;
+                    tbCidade.Text = endereco.Localidade;
+                    tbEstado.Text = endereco.Uf;
+                    tbRua.Text = endereco.Logradouro;
+
+                    var freteService = new FreteService();
+                    ValorFrete = freteService.CalcularFrete(endereco);
+                    tbValorFrete.Text = ValorFrete.ToString("C");
+
+                    PainelResultados.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    MostrarSnackbar("CEP não encontrado ou inválido.", ControlAppearance.Danger);
+                    PainelResultados.Visibility = Visibility.Collapsed;
+                    ValorFrete = 0;
+                    tbValorFrete.Text = "-";
+                }
+            }
+            else
+            {
+                tbValorFrete.Text = "";
+                PainelResultados.Visibility = Visibility.Hidden;
+                MostrarSnackbar("Por favor, digite um CEP válido com 8 dígitos.", ControlAppearance.Info);
+            }
         }
     }
 }

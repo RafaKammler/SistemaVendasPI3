@@ -103,13 +103,53 @@
                                 <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,15,0,0">
                                     <StackPanel>
                                         <TextBlock Text="Calcular frete e prazo" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <ui:TextBox Grid.Column="0" PlaceholderText="Digite seu CEP"/>
-                                            <ui:Button Grid.Column="1" Content="OK" Margin="5,0,0,0" Appearance="Primary" Background="{DynamicResource PrimaryAccentBrush}" Foreground="{DynamicResource AccentTextBrush}"/>
+                                            <ui:NumberBox Name="txCep" Grid.Column="0" PlaceholderText="Digite seu CEP" Padding="5"
+                          FontSize="14"
+                          Background="White" 
+                          Foreground="Black" 
+                          BorderBrush="Gray" 
+                          BorderThickness="1" MaxLength="8" SpinButtonPlacementMode="Hidden"/>
+                                            <ui:Button Grid.Column="1" Content="OK" Margin="5,0,0,0" Appearance="Primary" Background="{DynamicResource PrimaryAccentBrush}" Foreground="{DynamicResource AccentTextBrush}" Command="{Binding BuscarCepCommand}"/>
+                                        </Grid>
+
+                                        <Grid Name="PainelResultados" Visibility="Collapsed" Margin="0,15,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Top">
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                    <TextBlock Text="Rua: " FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                    <TextBlock Name="tbRua" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" />
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                    <TextBlock Text="Bairro: " FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                    <TextBlock Name="tbBairro" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                    <TextBlock Text="Cidade: " FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                    <TextBlock Name="tbCidade" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Estado: " FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                    <TextBlock Name="tbEstado" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                                <TextBlock Text="Valor do Frete" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Right"/>
+                                                <TextBlock Name="tbValorFrete" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryAccentBrush}" TextAlignment="Right"/>
+                                            </StackPanel>
                                         </Grid>
                                     </StackPanel>
                                 </Border>
@@ -129,7 +169,12 @@
                     <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="25" Margin="0,0,0,25" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                         <StackPanel>
                             <TextBlock Text="Deixe sua avaliação sobre o produto" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
-                            <ui:TextBox PlaceholderText="Escreva seu comentário aqui..." Text="{Binding NovoComentarioTexto, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"/>
+                            <ui:TextBox PlaceholderText="Escreva seu comentário aqui..." Text="{Binding NovoComentarioTexto, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" Padding="5"
+                                        FontSize="14"
+                                        Background="White" 
+                                        Foreground="Black" 
+                                        BorderBrush="Gray" 
+                                        BorderThickness="1"/>
                             <ui:Button Content="Publicar Comentário" Command="{Binding SalvarComentarioCommand}" Appearance="Primary" HorizontalAlignment="Right" Margin="0,15,0,0" Background="{DynamicResource PrimaryAccentBrush}" Foreground="{DynamicResource AccentTextBrush}"/>
                         </StackPanel>
                     </Border>

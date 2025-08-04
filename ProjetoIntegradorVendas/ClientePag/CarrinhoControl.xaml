@@ -80,7 +80,7 @@
                 <TextBlock x:Name="TotalCarrinho" Text="Total: R$ 0,00" FontSize="18" FontWeight="Bold"
                            Foreground="White"/>
                 <ui:Button Content="Finalizar Compra" Appearance="Primary" Margin="0,15,0,0"
-                           HorizontalAlignment="Stretch" />
+                           HorizontalAlignment="Stretch" Command="{Binding ComprarCommand}" />
             </StackPanel>
         </Border>
     </Grid>

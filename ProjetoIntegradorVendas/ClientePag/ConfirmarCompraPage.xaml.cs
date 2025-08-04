@@ -1,48 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ProjetoIntegradorVendas.Classes;
 using ProjetoIntegradorVendas.Services;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Input; // Adicione este using para o RelayCommand
 
 namespace ProjetoIntegradorVendas.ClientePag
 {
-    /// <summary>
-    /// Interaction logic for ConfirmarCompraPage.xaml
-    /// </summary>
     public partial class ConfirmarCompraPage : Page, INotifyPropertyChanged
     {
-        // Alterado para usar sua classe CarrinhoItem
         public ObservableCollection<CarrinhoItem> ItensDoCarrinho { get; set; }
         public Classes.Cliente ClienteLogado { get; set; }
 
-        private double _valorTotal;
-        public double ValorTotal
+        private double _subtotal;
+        public double Subtotal
         {
-            get => _valorTotal;
-            set
-            {
-                _valorTotal = value;
-                OnPropertyChanged(nameof(ValorTotal));
-            }
+            get => _subtotal;
+            set { _subtotal = value; OnPropertyChanged(nameof(Subtotal)); CalcularValorTotal(); }
         }
 
-        // Instanciando seus serviços
+        private decimal _valorFrete;
+        public decimal ValorFrete
+        {
+            get => _valorFrete;
+            set { _valorFrete = value; OnPropertyChanged(nameof(ValorFrete)); CalcularValorTotal(); }
+        }
+
+        private decimal _valorTotalFinal;
+        public decimal ValorTotalFinal
+        {
+            get => _valorTotalFinal;
+            set { _valorTotalFinal = value; OnPropertyChanged(nameof(ValorTotalFinal)); }
+        }
+
         private readonly PedidoService _pedidoService = new PedidoService();
         private readonly CarrinhoService _carrinhoService = new CarrinhoService();
+        public ICommand BuscarCepCommand { get; }
 
         public ConfirmarCompraPage(Classes.Cliente cliente)
         {
@@ -50,17 +48,57 @@ namespace ProjetoIntegradorVendas.ClientePag
             this.DataContext = this;
 
             ClienteLogado = cliente;
+            BuscarCepCommand = new RelayCommand<object>(ExecutarBuscarViaCep);
             CarregarDadosCarrinho();
         }
 
         private void CarregarDadosCarrinho()
         {
-            // Busca os itens do banco de dados usando seu serviço
             ItensDoCarrinho = _carrinhoService.ObterItensDoCarrinho(ClienteLogado.ClienteID);
-            // Calcula o valor total
-            ValorTotal = ItensDoCarrinho.Sum(item => item.Subtotal);
-
+            Subtotal = ItensDoCarrinho.Sum(item => item.Subtotal);
             OnPropertyChanged(nameof(ItensDoCarrinho));
+        }
+
+        private void CalcularValorTotal()
+        {
+            ValorTotalFinal = (decimal)Subtotal + ValorFrete;
+        }
+
+        private async void ExecutarBuscarViaCep(object parameter)
+        {
+            string cep = txCep.Text;
+            if (!string.IsNullOrWhiteSpace(cep) && cep.Length == 8)
+            {
+                var cepService = new CepService();
+                Endereco endereco = await cepService.BuscarEnderecoPorCep(cep);
+
+                if (endereco != null)
+                {
+                    tbBairro.Text = endereco.Bairro;
+                    tbCidade.Text = endereco.Localidade;
+                    tbEstado.Text = endereco.Uf;
+                    tbRua.Text = endereco.Logradouro;
+
+                    var freteService = new FreteService();
+                    ValorFrete = freteService.CalcularFrete(endereco);
+                    tbValorFrete.Text = ValorFrete.ToString("C");
+
+                    PainelResultados.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    MostrarSnackbar("CEP não encontrado ou inválido.", ControlAppearance.Danger);
+                    PainelResultados.Visibility = Visibility.Collapsed;
+                    ValorFrete = 0;
+                    tbValorFrete.Text = "-";
+                }
+            }
+            else
+            {
+                tbValorFrete.Text = "";
+                PainelResultados.Visibility = Visibility.Hidden;
+                MostrarSnackbar("Por favor, digite um CEP válido com 8 dígitos.", ControlAppearance.Info);
+            }
         }
 
         private void FinalizarCompra_Click(object sender, RoutedEventArgs e)
@@ -70,24 +108,31 @@ namespace ProjetoIntegradorVendas.ClientePag
                 MostrarSnackbar("Seu carrinho está vazio.", ControlAppearance.Danger);
                 return;
             }
+            if (ValorFrete <= 0 && tbValorFrete.Text == "-")
+            {
+                MostrarSnackbar("Por favor, calcule o frete para continuar.", ControlAppearance.Info);
+                return;
+            }
 
             var novoPedido = new Pedido
             {
                 ClienteID = ClienteLogado.ClienteID,
                 DataPedido = DateTime.Now,
-                VendaValor = (decimal)ValorTotal
+                VendaValor = ValorTotalFinal
             };
 
             try
             {
-                // Passa a lista de CarrinhoItem para o serviço de pedido
                 _pedidoService.CriarPedido(novoPedido, ItensDoCarrinho.ToList());
                 MostrarSnackbar("Compra realizada com sucesso!", ControlAppearance.Success);
 
-                // Limpa o carrinho do cliente no banco de dados
                 _carrinhoService.LimparCarrinho(ClienteLogado.ClienteID);
                 ItensDoCarrinho.Clear();
-                ValorTotal = 0;
+                Subtotal = 0;
+                ValorFrete = 0;
+                tbValorFrete.Text = "-";
+                PainelResultados.Visibility = Visibility.Collapsed;
+                txCep.Clear();
                 OnPropertyChanged(nameof(ItensDoCarrinho));
 
                 (sender as System.Windows.Controls.Button).IsEnabled = false;
@@ -99,21 +144,21 @@ namespace ProjetoIntegradorVendas.ClientePag
             }
         }
 
-        private void MostrarSnackbar(string mensagem, ControlAppearance aparencia)
+        public void MostrarSnackbar(string mensagem, ControlAppearance aparencia)
         {
-            var snackbar = new Snackbar(RootSnackbarPresenter)
+            Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter);
+            dlgMsg.Appearance = aparencia;
+            dlgMsg.Title = new System.Windows.Controls.TextBlock
             {
-                Title = mensagem,
-                Appearance = aparencia,
-                IsCloseButtonEnabled = false,
+                Text = mensagem,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                FontWeight = FontWeights.SemiBold
             };
-            snackbar.Show();
-        }
+            dlgMsg.IsCloseButtonEnabled = false;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+            dlgMsg.Show();
         }
 
         private void NavigationView_OnItemInvoked(object sender, RoutedEventArgs e)
@@ -128,15 +173,17 @@ namespace ProjetoIntegradorVendas.ClientePag
                     case "Home":
                         mainWindow.MainFrame.Navigate(new CatalogoProdutosPage(ClienteLogado));
                         break;
-                    case "Carrinho":
-                        break;
-                    case "Configurações":
-                        break;
                     case "Logout":
                         mainWindow.MainFrame.Navigate(new LoginPage());
                         break;
                 }
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

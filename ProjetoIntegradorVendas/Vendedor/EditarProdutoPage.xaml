@@ -6,8 +6,9 @@
       xmlns:local="clr-namespace:ProjetoIntegradorVendas"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
-      d:DesignHeight="720" d:DesignWidth="1280"
-      Title="EditarProdutoPage">
+      d:DesignHeight="800" d:DesignWidth="1280"
+      Title="EditarProdutoPage"
+      Background="#F0F0F0">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -16,17 +17,29 @@
         </Grid.RowDefinitions>
 
         <ui:NavigationView x:Name="NavigationViewControl"
-                           UseLayoutRounding="False"
+                           Grid.Row="0"
                            PaneDisplayMode="Top"
-                           Grid.Row="0">
+                           IsPaneVisible="True">
+            <ui:NavigationView.Resources>
+                <Style TargetType="ui:NavigationViewItem">
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Cursor" Value="Hand"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="ui:SymbolIcon">
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                </Style>
+            </ui:NavigationView.Resources>
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked" >
+                <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.Home24}" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
-
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem x:Name="Logout" Content="Logout" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
@@ -36,52 +49,111 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="30" Width="400" HorizontalAlignment="Center">
+        <Grid Grid.Row="1">
+            <Border x:Name="MainBorder"
+            MaxWidth="650"
+            Height="680"
+            Margin="363,40,363,40"
+            Background="White"
+            BorderBrush="LightGray"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="30"
+            UseLayoutRounding="True">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="1" Color="#E0E0E0" Opacity="0.4" BlurRadius="10"/>
+                </Border.Effect>
 
-                <TextBlock Text="Edição do produto" FontSize="28" FontWeight="Bold" Foreground="White" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <TextBlock Text="Edição do Produto"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="Black"
+                           Margin="0,0,0,25"/>
 
-                <TextBlock Text="Nome" Foreground="White" Margin="0,10,0,5"/>
-                <TextBox x:Name="txNomeProduto" Text="{Binding Produto.Nome}" Height="40" MaxLength="19"/>
+                        <TextBlock Text="Nome do Produto" Foreground="Black" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="txNomeProduto"
+                         Text="{Binding Produto.Nome}"
+                         Padding="5"
+                         Margin="0,0,0,15"
+                         FontSize="14"
+                         Background="White" 
+                         Foreground="Black" 
+                         BorderBrush="Gray" 
+                         BorderThickness="1"/>
 
-                <TextBlock Text="Preço" Foreground="White" Margin="0,10,0,5"/>
-                <ui:NumberBox x:Name="txPrecoProduto" Value="{Binding Produto.Preco}" Icon="NumberSymbolSquare24" PlaceholderText="Preço"/>
+                        <TextBlock Text="Preço" Foreground="Black" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="txPrecoProduto"
+                         Text="{Binding Produto.Preco}"
+                         Padding="5"
+                         Margin="0,0,0,15"
+                         FontSize="14"
+                         Background="White" 
+                         Foreground="Black" 
+                         BorderBrush="Gray" 
+                         BorderThickness="1"/>
 
-                <TextBlock Text="Descrição" Foreground="White" Margin="0,10,0,5"/>
-                <TextBox x:Name="txDescricaoProduto" Text="{Binding Produto.Descricao}" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBlock Text="Descrição" Foreground="Black" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="txDescricaoProduto"
+                         Text="{Binding Produto.Descricao}"
+                         MinHeight="80"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         Padding="5"
+                         Margin="0,0,0,15"
+                         FontSize="14"
+                         Background="White" 
+                         Foreground="Black" 
+                         BorderBrush="Gray" 
+                         BorderThickness="1"/>
 
-                <TextBlock Text="Caminho da Imagem" Foreground="White" Margin="0,10,0,5"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <TextBlock Text="Estoque" Foreground="Black" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="txEstoqueProduto"
+                         Text="{Binding Produto.Estoque}"
+                         Padding="5"
+                         Margin="0,0,0,15"
+                         FontSize="14"
+                         Background="White" 
+                         Foreground="Black" 
+                         BorderBrush="Gray" 
+                         BorderThickness="1"/>
 
-                    <ui:Button Grid.Column="0" 
-                               Click="OpenFile_Click" 
-                               Content="Selecionar Nova Imagem" />
-
-                    <TextBlock x:Name="txbNomeArquivo"
+                        <TextBlock Text="Imagem do Produto" Foreground="Black" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:Button Grid.Column="0"
+                            Content="Selecionar Imagem"
+                            Click="OpenFile_Click"
+                            Padding="10,5"
+                            Background="#E0E0E0" 
+                            Foreground="Black"
+                            BorderThickness="0"/>
+                            <TextBlock x:Name="txbNomeArquivo"
                                Grid.Column="1"
-                               TextWrapping="Wrap"  Foreground="White"
+                               TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis"
+                               Foreground="DarkGray"
                                VerticalAlignment="Center"
-                               Margin="10,0,0,0" />
-                </Grid>
+                               Margin="15,0,0,0"/>
+                        </Grid>
 
-                <TextBlock Text="Estoque" Foreground="White" Margin="0,10,0,5"/>
-                <ui:NumberBox x:Name="txEstoqueProduto" Value="{Binding Produto.Estoque}" Icon="NumberSymbolSquare24" PlaceholderText="Quantidade em Estoque"/>
-
-                <Button Content="Salvar Alterações"
+                        <ui:Button Content="Salvar Alterações"
+                        HorizontalAlignment="Stretch"
                         Height="40"
-                        Margin="0,20,0,0"
-                        Background="DarkOrange"
-                        Foreground="White"
                         FontWeight="Bold"
                         Click="SalvarProduto_Click"
-                        HorizontalAlignment="Center"/>
+                        FontSize="16"
+                        BorderThickness="0"
+                        Appearance="Primary"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
 
-            </StackPanel>
-        </ScrollViewer>
         <ui:SnackbarPresenter Grid.Row="1" x:Name="RootSnackbarPresenter"
                               Width="300"
                               HorizontalAlignment="Center"

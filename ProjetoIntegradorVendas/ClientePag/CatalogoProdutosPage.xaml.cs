@@ -87,9 +87,9 @@ namespace ProjetoIntegradorVendas
                 valorTotal += item.Produto.Preco * item.Quantidade;
             }
 
-            var carrinhoControl = new ProjetoIntegradorVendas.Cliente.CarrinhoControl();
+            var carrinhoControl = new ProjetoIntegradorVendas.Cliente.CarrinhoControl(usuario);
             carrinhoControl.CartItemsListView.ItemsSource = itensCarrinho;
-            carrinhoControl.TotalCarrinho.Text = $"Total: {valorTotal:C}"; // Formata como moeda
+            carrinhoControl.TotalCarrinho.Text = $"Total: {valorTotal:C}"; 
 
             mainWindow.CartFlyout.Content = carrinhoControl;
             mainWindow.CartFlyout.IsOpen = true;

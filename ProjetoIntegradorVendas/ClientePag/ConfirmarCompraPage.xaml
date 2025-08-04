@@ -54,17 +54,61 @@
                         <Border.Effect>
                             <DropShadowEffect ShadowDepth="1" Color="#E0E0E0" Opacity="0.4" BlurRadius="15"/>
                         </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="Endereço de Entrega" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="Black"/>
-                            <TextBlock Text="{Binding ClienteLogado.ClienteNome}" FontWeight="Medium" Foreground="#333333" Margin="0,5,0,2" />
-                            <TextBlock Text="{Binding ClienteLogado.ClienteCep}" Foreground="#555555" Margin="0,0,0,2" />
-                            <TextBlock Text="{Binding ClienteLogado.ClienteTelefone}" Foreground="#555555" />
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                                <TextBlock Text="Endereço Cadastrado" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="Black"/>
+                                <TextBlock Text="{Binding ClienteLogado.ClienteNome}" FontWeight="Medium" Foreground="#333333" Margin="0,5,0,2" />
+                                <TextBlock Text="{Binding ClienteLogado.ClienteCep}" Foreground="#555555" Margin="0,0,0,2" />
+                                <TextBlock Text="{Binding ClienteLogado.ClienteTelefone}" Foreground="#555555" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Calcular Frete" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="Black"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:NumberBox x:Name="txCep" Grid.Column="0" PlaceholderText="Digite um novo CEP" Padding="5"
+                                                  FontSize="14" Background="White" Foreground="Black" 
+                                                  BorderBrush="Gray" BorderThickness="1" MaxLength="8" SpinButtonPlacementMode="Hidden"/>
+                                    <ui:Button Grid.Column="1" Content="OK" Margin="5,0,0,0" Appearance="Primary" Command="{Binding BuscarCepCommand}"/>
+                                </Grid>
+
+                                <Grid x:Name="PainelResultados" Visibility="Collapsed" Margin="0,15,0,0">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                            <TextBlock Text="Rua: " FontWeight="SemiBold" />
+                                            <TextBlock x:Name="tbRua" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                            <TextBlock Text="Bairro: " FontWeight="SemiBold" />
+                                            <TextBlock x:Name="tbBairro" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                            <TextBlock Text="Cidade: " FontWeight="SemiBold" />
+                                            <TextBlock x:Name="tbCidade" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Estado: " FontWeight="SemiBold" />
+                                            <TextBlock x:Name="tbEstado" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
                     <TextBlock Text="Itens do Pedido" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,15" Foreground="Black" />
 
-                    <ListView ItemsSource="{Binding ItensDoCarrinho}" Background="Transparent" BorderThickness="0">
+                    <ListView ItemsSource="{Binding ItensDoCarrinho}" Background="Transparent" BorderThickness="0"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled">
+
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -117,18 +161,18 @@
 
                     <Grid Margin="0,8">
                         <TextBlock Text="Subtotal" Foreground="#555555"/>
-                        <TextBlock Text="{Binding ValorTotal, StringFormat=C, ConverterCulture=pt-BR}" HorizontalAlignment="Right" Foreground="#555555" />
+                        <TextBlock Text="{Binding Subtotal, StringFormat=C, ConverterCulture=pt-BR}" HorizontalAlignment="Right" Foreground="#555555" />
                     </Grid>
                     <Grid Margin="0,8">
                         <TextBlock Text="Frete" Foreground="#555555"/>
-                        <TextBlock Text="Grátis" Foreground="Green" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                        <TextBlock x:Name="tbValorFrete" Text="-" Foreground="Green" FontWeight="SemiBold" HorizontalAlignment="Right" />
                     </Grid>
 
                     <Separator Background="#EEEEEE" Margin="0,20"/>
 
                     <Grid Margin="0,15,0,25">
                         <TextBlock Text="Valor Total" FontWeight="Bold" FontSize="18" Foreground="Black"/>
-                        <TextBlock Text="{Binding ValorTotal, StringFormat=C, ConverterCulture=pt-BR}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="18" Foreground="Black"/>
+                        <TextBlock Text="{Binding ValorTotalFinal, StringFormat=C, ConverterCulture=pt-BR}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="18" Foreground="Black"/>
                     </Grid>
 
                     <TextBlock Text="Forma de Pagamento" FontSize="18" FontWeight="Bold" Foreground="Black" Margin="0,10,0,15" />
@@ -142,7 +186,12 @@
                 </StackPanel>
             </Border>
 
-            <ui:SnackbarPresenter Name="RootSnackbarPresenter" Grid.ColumnSpan="2"/>
+            <ui:SnackbarPresenter Grid.Row="1" x:Name="RootSnackbarPresenter" Grid.ColumnSpan="2"
+                                  Width="300"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Bottom"
+                                  Margin="0,0,0,30"
+                                  Panel.ZIndex="999"/>
         </Grid>
     </Grid>
 </Page>

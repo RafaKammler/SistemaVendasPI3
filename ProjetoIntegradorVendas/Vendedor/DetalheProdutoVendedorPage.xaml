@@ -6,8 +6,9 @@
       xmlns:local="clr-namespace:ProjetoIntegradorVendas"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
-      d:DesignHeight="720" d:DesignWidth="1280"
-      Title="DetalheProdutoVendedorPage">
+      d:DesignHeight="800" d:DesignWidth="1280"
+      Title="DetalheProdutoVendedorPage"
+      Background="{DynamicResource ApplicationBackgroundBrush}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -16,17 +17,29 @@
         </Grid.RowDefinitions>
 
         <ui:NavigationView x:Name="NavigationViewControl"
-                           UseLayoutRounding="False"
+                           Grid.Row="0"
                            PaneDisplayMode="Top"
-                           Grid.Row="0">
+                           IsPaneVisible="True">
+            <ui:NavigationView.Resources>
+                <Style TargetType="ui:NavigationViewItem">
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Cursor" Value="Hand"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="ui:SymbolIcon">
+                    <Setter Property="Foreground" Value="Black"/>
+                </Style>
+            </ui:NavigationView.Resources>
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked" >
+                <ui:NavigationViewItem Content="Home" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="{x:Static ui:SymbolRegular.Home24}" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
-
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem x:Name="Logout" Content="Logout" Click="NavigationView_OnItemInvoked">
                     <ui:NavigationViewItem.Icon>
@@ -36,78 +49,84 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Background="#FF1E1E1E">
-            <StackPanel Margin="20">
-                <TextBlock Text="{Binding Produto.Nome}" FontSize="32" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="20" />
-                        <ColumnDefinition Width="*" MinWidth="300" />
-                        <ColumnDefinition Width="20" />
-                        <ColumnDefinition Width="300" />
-                    </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" CornerRadius="10">
-                        <Image Source="{Binding Produto.ImagemPath}" Height="400" Width="400" Stretch="Uniform"/>
-                    </Border>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" >
+            <StackPanel Margin="40,20">
 
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="Descrição do Produto" FontSize="20" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,10"/>
-                        <TextBlock Text="{Binding Produto.Descricao}" Foreground="LightGray" FontSize="16" TextWrapping="Wrap"/>
-                    </StackPanel>
+                <TextBlock Text="{Binding Produto.Nome}" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Margin="0,0,0,20"/>
 
-                    <Border Grid.Column="4" Background="#FF2D2D30" CornerRadius="8" Padding="15">
-                        <StackPanel>
-                            <TextBlock Text="{Binding Produto.Preco, StringFormat=R$ {0:F2}}" FontSize="28" Foreground="LightGreen" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Produto.Estoque, StringFormat=Em estoque: {0} unidades}" Foreground="White" FontSize="16" Margin="0,5,0,25"/>
+                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="30" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="1" Color="#E0E0E0" Opacity="0.5" BlurRadius="10"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="380" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                            <Border BorderBrush="Gray" BorderThickness="0,1,0,0" Padding="0,15,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="Informações do Fornecedor" Foreground="White" FontWeight="SemiBold" FontSize="18" Margin="0,0,0,10"/>
-                                    <TextBlock Foreground="Gray" Margin="0,5,0,2">Nome</TextBlock>
-                                    <TextBlock Text="{Binding Produto.IdFornecedor.FornecedorNome}" Foreground="White" FontSize="14" />
-                                    <TextBlock Foreground="Gray" Margin="0,10,0,2">CNPJ</TextBlock>
-                                    <TextBlock Text="{Binding Produto.IdFornecedor.FornecedorCNPJ}" Foreground="White" FontSize="14"/>
-                                    <TextBlock Foreground="Gray" Margin="0,10,0,2">Email</TextBlock>
-                                    <TextBlock Text="{Binding Produto.IdFornecedor.FornecedorEmail}" Foreground="White" FontSize="14"/>
-                                    <TextBlock Foreground="Gray" Margin="0,10,0,2">Telefone</TextBlock>
-                                    <TextBlock Text="{Binding Produto.IdFornecedor.FornecedorTelefone}" Foreground="White" FontSize="14"/>
-                                </StackPanel>
-                            </Border>
-                            <ui:Button 
-                                Margin="0,20,0,0"
-                                Content="Editar Produto" 
-                                Click="Editar_Click"
-                                Appearance="Primary" 
-                                Icon="{ui:SymbolIcon Edit24}" 
-                                FontWeight="Bold" 
-                                Height="40"/>
+                        <Border Grid.Column="0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8">
+                            <Image Source="{Binding Produto.ImagemPath}" Height="500" Width="500" Stretch="Uniform"/>
+                        </Border>
+
+                        <Border Grid.Column="2" Background="{DynamicResource SecondaryCardBackgroundBrush}" CornerRadius="8" Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Produto.Preco, StringFormat=R$ {0:F2}}" FontSize="32" Foreground="{DynamicResource PrimaryAccentBrush}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Produto.Estoque, StringFormat=Em estoque: {0} unidades}" Foreground="#388E3C" FontSize="14" FontWeight="SemiBold" Margin="0,5,0,25"/>
+
+                                <ui:Button Content="Editar Produto" 
+                                           Click="Editar_Click"
+                                           Appearance="Primary" 
+                                           Background="{DynamicResource PrimaryAccentBrush}" 
+                                           Foreground="{DynamicResource AccentTextBrush}" 
+                                           FontWeight="Bold" 
+                                           Height="45" 
+                                           Icon="{ui:SymbolIcon Edit24}"
+                                           Margin="0,0,0,25"/>
+
+                                <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,15,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="Informações do Fornecedor" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                        <TextBlock Text="{Binding Produto.IdFornecedor.FornecedorNome}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="14"/>
+                                        <TextBlock Text="{Binding Produto.IdFornecedor.FornecedorCNPJ}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="14" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel Grid.Column="4" VerticalAlignment="Top">
+                            <TextBlock Text="Descrição do Produto" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding Produto.Descricao}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="16" TextWrapping="Wrap" />
                         </StackPanel>
-                    </Border>
-                </Grid>
+                    </Grid>
+                </Border>
 
-                <StackPanel Margin="0,30,0,0">
-                    <TextBlock Text="Avaliações de Clientes" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,20,0,15"/>
+                <StackPanel Margin="0,40,0,0">
+                    <TextBlock Text="Avaliações de Clientes" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,15"/>
                     <ItemsControl ItemsSource="{Binding Comentarios}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="#FF3A3A3A" BorderThickness="0,0,0,1" Padding="0,15,0,15">
+                                <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,20">
                                     <StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                            <Ellipse Width="32" Height="32" Margin="0,0,10,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Ellipse Width="40" Height="40" Margin="0,0,15,0" VerticalAlignment="Top">
                                                 <Ellipse.Fill>
-                                                    <VisualBrush Stretch="Uniform">
-                                                        <VisualBrush.Visual>
-                                                            <ui:SymbolIcon Symbol="Person24" Foreground="Gray"/>
-                                                        </VisualBrush.Visual>
-                                                    </VisualBrush>
+                                                    <SolidColorBrush Color="#E0E0E0"/>
                                                 </Ellipse.Fill>
                                             </Ellipse>
-                                            <TextBlock Text="{Binding Cliente.ClienteNome}" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{Binding ComentarioTexto}" Foreground="LightGray" TextWrapping="Wrap" Margin="42,0,0,5"/>
-                                        <TextBlock Text="{Binding DataComentario, StringFormat='dd/MM/yyyy HH:mm'}" Foreground="Gray" FontSize="11" Margin="42,0,0,0"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Cliente.ClienteNome}" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="15"/>
+                                                <TextBlock Text="{Binding DataComentario, StringFormat='dd/MM/yyyy'}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Text="{Binding ComentarioTexto}" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="14" TextWrapping="Wrap" Margin="55,10,0,0"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -116,5 +135,12 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
+
+        <ui:SnackbarPresenter Grid.Row="1" x:Name="RootSnackbarPresenter"
+                              Width="300"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Bottom"
+                              Margin="0,0,0,30"
+                              Panel.ZIndex="999"/>
     </Grid>
 </Page>

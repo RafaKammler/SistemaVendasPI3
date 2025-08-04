@@ -18,23 +18,9 @@
         
         <SolidColorBrush x:Key="PrimaryTextBrush" Color="#121212"/>
         <SolidColorBrush x:Key="SecondaryTextBrush" Color="#6E6E73"/>
-        <SolidColorBrush x:Key="AccentTextBrush" Color="White"/>
+                  <SolidColorBrush x:Key="AccentTextBrush" Color="White"/>
 
-        <Style TargetType="markup:TextBox">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Style.Triggers>
-                <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryAccentBrush}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Page">
+            <Style TargetType="Page">
             <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" />
         </Style>
         </ResourceDictionary>  

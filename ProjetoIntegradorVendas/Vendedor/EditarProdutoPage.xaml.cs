@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using ProjetoIntegradorVendas.Services;
 using ProjetoIntegradorVendas.Vendedor;
 using Wpf.Ui.Controls;
-using TextBlock = Wpf.Ui.Controls.TextBlock;
+// Removido o using que causava conflito com TextBlock
 
 namespace ProjetoIntegradorVendas
 {
@@ -24,9 +24,19 @@ namespace ProjetoIntegradorVendas
             this.Produto = produto;
             this.DataContext = this;
 
+            // Pré-popula os campos de texto com os valores do produto
+            txNomeProduto.Text = produto.Nome;
+            txDescricaoProduto.Text = produto.Descricao;
+            txPrecoProduto.Text = produto.Preco.ToString(CultureInfo.InvariantCulture); // Converte número para texto
+            txEstoqueProduto.Text = produto.Estoque.ToString(); // Converte número para texto
+
             if (!string.IsNullOrEmpty(produto.Imagem))
             {
                 txbNomeArquivo.Text = "Imagem atual: " + Path.GetFileName(produto.Imagem);
+            }
+            else
+            {
+                txbNomeArquivo.Text = "Nenhuma imagem selecionada.";
             }
         }
 
@@ -87,13 +97,26 @@ namespace ProjetoIntegradorVendas
 
         private void SalvarProduto_Click(object sender, RoutedEventArgs e)
         {
+            // Validação do Preço
+            if (!double.TryParse(txPrecoProduto.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double preco))
+            {
+                MostrarSnackbar("O preço digitado não é um número válido.", ControlAppearance.Danger);
+                return;
+            }
+
+            // Validação do Estoque
+            if (!int.TryParse(txEstoqueProduto.Text, out int estoque))
+            {
+                MostrarSnackbar("A quantidade em estoque não é um número inteiro válido.", ControlAppearance.Danger);
+                return;
+            }
+
             // Atualiza as propriedades do produto com os valores da tela
             Produto.Nome = txNomeProduto.Text;
             Produto.Descricao = txDescricaoProduto.Text;
-            Produto.Preco = (double)(txPrecoProduto.Value ?? 0);
-            Produto.Estoque = (int)(txEstoqueProduto.Value ?? 0);
+            Produto.Preco = preco; // Usa o valor convertido
+            Produto.Estoque = estoque; // Usa o valor convertido
 
-            // Se uma nova imagem foi selecionada, processa ela
             if (!string.IsNullOrEmpty(caminhoNovaImagem))
             {
                 string caminhoRelativoParaSalvar = CopiarImagemERetornarCaminhoRelativo(caminhoNovaImagem);
@@ -102,10 +125,8 @@ namespace ProjetoIntegradorVendas
                     MostrarSnackbar("Ocorreu um erro ao processar a nova imagem.", ControlAppearance.Danger);
                     return;
                 }
-                // Atualiza a propriedade Imagem do produto com o NOVO caminho relativo
                 Produto.Imagem = caminhoRelativoParaSalvar;
             }
-            // Se nenhuma imagem nova foi selecionada, a propriedade Produto.Imagem manterá seu valor antigo.
 
             if (string.IsNullOrEmpty(Produto.Nome) || string.IsNullOrEmpty(Produto.Descricao))
             {
@@ -116,6 +137,8 @@ namespace ProjetoIntegradorVendas
             var service = new ProdutoService();
             try
             {
+                // Agora você precisa de um método no seu ProdutoService para ATUALIZAR
+                // Supondo que você crie um método chamado "AtualizarProduto"
                 service.AtualizarProduto(Produto);
                 MostrarSnackbar("Produto atualizado com sucesso!", ControlAppearance.Success);
             }
@@ -127,19 +150,23 @@ namespace ProjetoIntegradorVendas
 
         public void MostrarSnackbar(string mensagem, ControlAppearance aparencia)
         {
+            // Usando System.Windows.Controls.TextBlock para evitar qualquer ambiguidade
+            var snackbarTitle = new System.Windows.Controls.TextBlock
+            {
+                Text = mensagem,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                FontWeight = FontWeights.SemiBold
+            };
+
             Snackbar dlgMsg = new Snackbar(RootSnackbarPresenter)
             {
                 Appearance = aparencia,
-                Title = new TextBlock
-                {
-                    Text = mensagem,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    TextAlignment = TextAlignment.Center,
-                    FontWeight = FontWeights.SemiBold
-                },
+                Title = snackbarTitle,
                 IsCloseButtonEnabled = false
             };
             dlgMsg.Show();
         }
+
     }
 }
